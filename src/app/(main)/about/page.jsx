@@ -26,7 +26,7 @@ const About = () => {
                         <li>Skilled Labor Staffing</li>
                         <li>On-Demand Workforce Solutions</li>
                         <li>Industry-Specific Staffing</li><br />
-                        <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">Why choose HireQuest</h2>
+                        <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">Why choose HireQuest?</h2>
                         <p className="text-base text-gray-700 md:text-lg">
                             <p className="text-base text-gray-700 md:text-lg">
                                 HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments, HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.

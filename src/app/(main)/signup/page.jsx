@@ -115,7 +115,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="password" className="font-medium">Password</label>
               <input
-              type="text"
+              type="password"
               id="password"
               onChange={signupForm.handleChange}
               value={signupForm.values.password}
@@ -133,7 +133,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="confirmPassword" className="font-medium">Confirm Password</label>
               <input
-              type="text"
+              type="password"
               id="confirmPassword"
               onChange={signupForm.handleChange}
               value={signupForm.values.confirmPassword}

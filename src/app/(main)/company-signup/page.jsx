@@ -40,6 +40,7 @@ const SignUp = () => {
       confirmPassword: '',
       description: '',
       country: '',
+      state:'',
       city: '',
       contactNo: '',
       establishedDate: '',
@@ -103,7 +104,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="email" className="font-medium">Email</label>
               <input
-                type="text"
+                type="email"
                 id="email"
                 onChange={signupForm.handleChange}
                 value={signupForm.values.email}
@@ -121,7 +122,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="password" className="font-medium">Password</label>
               <input
-                type="text"
+                type="password"
                 id="password"
                 onChange={signupForm.handleChange}
                 value={signupForm.values.password}
@@ -139,7 +140,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="confirmPassword" className="font-medium">Confirm Password</label>
               <input
-                type="text"
+                type="password"
                 id="confirmPassword"
                 onChange={signupForm.handleChange}
                 value={signupForm.values.confirmPassword}
@@ -154,24 +155,31 @@ const SignUp = () => {
                 )
               }
             </div>
-            <div>
-              <label htmlFor="description" className="font-medium">Description</label>
-              <input
-                type="text"
-                id="description"
-                onChange={signupForm.handleChange}
-                value={signupForm.values.description}
-                required=""
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-              />
-              {
-                (signupForm.errors.description && signupForm.touched.description) && (
-                  <p className="text-xs text-red-600 mt-2" id="email-error">
-                    {signupForm.errors.description}
-                  </p>
-                )
-              }
-            </div>
+
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="address"
+                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+              >
+                Description
+              </label><div className='flex gap-3'>
+                <textarea
+                  name="description"
+                  id="description"
+                  onChange={signupForm.handleChange}
+                  value={signupForm.values.description}
+                  required=""
+                  className="h-28 w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
+                {
+                  (signupForm.errors.description && signupForm.touched.description) && (
+                    <p className="text-xs text-red-600 mt-2" id="email-error">
+                      {signupForm.errors.description}
+                    </p>
+                  )
+                }
+              </div></div>
+
+
             <div>
               <label htmlFor="country" className="font-medium">Country</label>
               <input
@@ -186,6 +194,25 @@ const SignUp = () => {
                 (signupForm.errors.country && signupForm.touched.country) && (
                   <p className="text-xs text-red-600 mt-2" id="email-error">
                     {signupForm.errors.country}
+                  </p>
+                )
+              }
+            </div>
+
+            <div>
+              <label htmlFor="state" className="font-medium">State</label>
+              <input
+                type="text"
+                id="state"
+                onChange={signupForm.handleChange}
+                value={signupForm.values.state}
+                required=""
+                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+              />
+              {
+                (signupForm.errors.state && signupForm.touched.state) && (
+                  <p className="text-xs text-red-600 mt-2" id="email-error">
+                    {signupForm.errors.state}
                   </p>
                 )
               }
@@ -229,7 +256,7 @@ const SignUp = () => {
             <div>
               <label htmlFor="establishedDate" className="font-medium">Established Date</label>
               <input
-                type="text"
+                type="date"
                 id="establishedDate"
                 onChange={signupForm.handleChange}
                 value={signupForm.values.establishedDate}
