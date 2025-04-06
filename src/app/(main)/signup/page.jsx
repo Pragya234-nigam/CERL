@@ -42,7 +42,7 @@ const SignUp = () => {
       console.log(values);
       //send values to backend
 
-      axios.post('http://localhost:5000/user/add', values)//Json direct//asynchronous no time to wait then catch error handling async
+      axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/add`, values)//Json direct//asynchronous no time to wait then catch error handling async
         .then((result) => {
           toast.success('User Registered Successfully');
           router.push('/login');
