@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import React from 'react'
 const About = () => {
     return (
@@ -12,6 +13,7 @@ const About = () => {
                                 Recruitment and  Talent Acquisition
                             </span>
                         </h2>
+
                         <p className="text-base text-gray-700 md:text-lg">
                             HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments, HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.
                         </p>
@@ -33,8 +35,22 @@ const About = () => {
                             </p>
                         </p>
                     </div>
-
-
+                       <p className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">Choose between Company or Employeer</p>
+                    <div><>
+                        <Link
+                            href="/company-login"
+                            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                            Company
+                        </Link>
+                        <Link
+                            href="/login"
+                            className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                        >
+                            Employer
+                        </Link>
+                    </>
+                    </div>
                 </div>
                 <div>
                     <img

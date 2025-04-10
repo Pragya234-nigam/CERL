@@ -9,38 +9,11 @@ import axios from 'axios';
 
 
 const InterviewSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
     email: Yup.string().email('Invalid email').required('Required'),//email 
     contactNo: Yup.string()
         .min(10, 'Contact Number must be 10 digits')
         .max(10, 'Contact Number must be 10 digits')
-        .required('Contact Number is Required'),
-    skills: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
-    age: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
-    experience: Yup.string()
-
-        .required('Required'),
-    education: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
-    address: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
-    resume: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
+        .required('Contact Number is Required')
 });
 //wrapper , trigger in react-toast
 
@@ -50,6 +23,7 @@ const Interview = () => {
 
     const interviewForm = useFormik({
         initialValues: {
+            image: '',
             name: '',
             email: '',
             contactNo: '',
@@ -58,13 +32,14 @@ const Interview = () => {
             experience: '',
             education: '',
             address: '',
+            jobType: '',
             resume: '',
         },
         onSubmit: (values) => {
             console.log(values);
             //send values to backend
 
-            axios.post('http://localhost:5000/interview/add', values)//Json direct//asynchronous no time to wait then catch error handling async
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/interview/add`, values)//Json direct//asynchronous no time to wait then catch error handling async
                 .then((result) => {
                     toast.success('Interview Information Submitted Successfully');
                     router.push('/login');
@@ -76,6 +51,42 @@ const Interview = () => {
         validationSchema: InterviewSchema
     })
 
+
+    const upload = (e) => {
+        const file = e.target.files[0];
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', 'interview');
+        fd.append('cloud_name', 'dcvorslf4')
+        axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/image/upload', fd)
+            .then((res) => {
+                toast.success('File Uploaded Successfully');
+                console.log(res.data);
+                interviewForm.setFieldValue('image', res.data.url);
+            }).catch((err) => {
+                console.log(err);
+                toast.error('File Upload Failed');
+            });
+
+    }
+
+    const upload2 = (e) => {
+        const file = e.target.files[0];
+        const fd1 = new FormData();
+        fd1.append('file', file);
+        fd1.append('upload_preset', 'interview');
+        fd1.append('cloud_name', 'dcvorslf4')
+
+             axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/resume/upload2', fd1)
+            .then((res) => {
+                toast.success('File Uploaded Successfully');
+                console.log(res.data);
+                interviewForm.setFieldValue('resume', res.data.url);
+            }).catch((err) => {
+                console.log(err);
+                toast.error('File Upload Failed');
+            });
+        }
     return (
         <div><main className="w-full  flex flex-col items-center justify-center bg-gray-50 sm:px-4">
             <div className="w-full space-y-6 text-gray-600 sm:max-w-md">
@@ -89,6 +100,28 @@ const Interview = () => {
                 </div>
                 <div className="bg-white shadow p-4 py-6 sm:p-6 sm:rounded-lg">
                     <form onSubmit={interviewForm.handleSubmit} className="space-y-5">
+
+                        <div className="max-w-sm">
+                            <label htmlFor='upload' className="block file-upload-label font-medium">Please Upload Your Profile Photo<br></br><br></br>
+                                <input id="upload" type="file" onChange={upload} hidden />
+                                <span className="sr-only">Choose profile photo</span>
+                                <input
+                                    type="text"
+                                    className="block w-full text-sm text-gray-500 file:me-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold  file:bg-blue-600 file:text-white  hover:file:bg-blue-700 file:disabled:opacity-50 file:disabled:pointer-events-nonedark:text-neutral-500 dark:file:bg-blue-500 dark:hover:file:bg-blue-400"
+                                    id="image"
+                                    onChange={interviewForm.handleChange}
+                                    value={interviewForm.values.image}
+                                />
+
+                            </label>
+                            {
+                                (interviewForm.errors.image && interviewForm.touched.image) && (
+                                    <p className="text-xs text-red-600 mt-2" id="email-error">
+                                        {interviewForm.errors.image}
+                                    </p>
+                                )
+                            }
+                        </div>
                         <div>
                             <label htmlFor="name" className="font-medium">Name</label>
                             <input
@@ -126,7 +159,7 @@ const Interview = () => {
                             }
                         </div>
                         <div>
-                            <label htmlFor="contactNo" className="font-medium">Contact Number</label>
+                            <label htmlFor="contactNo" className="font-medium" placeholder="+91">Contact Number</label>
                             <input
                                 type="text"
                                 id="contactNo"
@@ -154,7 +187,7 @@ const Interview = () => {
                                     name="skills"
                                     id="skills"
                                     onChange={interviewForm.handleChange}
-                                    value={interviewForm.values.activity}
+                                    value={interviewForm.values.skills}
                                     required=""
                                     className="h-28 w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
                                 {
@@ -168,14 +201,19 @@ const Interview = () => {
 
                         <div>
                             <label htmlFor="age" className="font-medium">Age</label>
-                            <input
-                                type="text"
+                            <select
                                 id="age"
                                 onChange={interviewForm.handleChange}
                                 value={interviewForm.values.age}
                                 required=""
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                            />
+                            >
+                                <option value="below 20">below 20</option>
+                                <option value="20-30">20-30</option>
+                                <option value="30-40">30-40</option>
+                                <option value="40-50">40-50</option>
+                                <option value="above 50">above 50</option>
+                            </select>
                             {
                                 (interviewForm.errors.age && interviewForm.touched.age) && (
                                     <p className="text-xs text-red-600 mt-2" id="email-error">
@@ -184,7 +222,6 @@ const Interview = () => {
                                 )
                             }
                         </div>
-
                         <div>
                             <label htmlFor="experience" className="font-medium">Experience</label>
                             <input
@@ -205,14 +242,19 @@ const Interview = () => {
                         </div>
                         <div>
                             <label htmlFor="education" className="font-medium">Education</label>
-                            <input
-                                type="text"
+                            <select
                                 id="education"
                                 onChange={interviewForm.handleChange}
                                 value={interviewForm.values.education}
                                 required=""
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                            />
+                            >
+                                <option value="10th">10th</option>
+                                <option value="12th">12th</option>
+                                <option value="Graduate">Graduate</option>
+                                <option value="Post Graduate">Post Graduate</option>
+                                <option value="PhD">PhD</option>
+                            </select>
                             {
                                 (interviewForm.errors.education && interviewForm.touched.education) && (
                                     <p className="text-xs text-red-600 mt-2" id="email-error">
@@ -244,21 +286,40 @@ const Interview = () => {
                                     )
                                 }
                             </div></div>
-                            
-
-
                         <div>
-                            <label className="file-upload-label">Resume<br></br>
+                            <label htmlFor="jobType" className="font-medium">Job Type</label>
+                            <select
+                                id="jobType"
+                                onChange={interviewForm.handleChange}
+                                value={interviewForm.values.jobType}
+                                required=""
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                            >
+                                <option value="Internship">Internship</option>
+                                <option value="Full Time">Full Time</option>
+                                <option value="Part Time">Part Time</option>
+                            </select>
+                            {
+                                (interviewForm.errors.jobType && interviewForm.touched.jobType) && (
+                                    <p className="text-xs text-red-600 mt-2" id="email-error">
+                                        {interviewForm.errors.jobType}
+                                    </p>
+                                )
+                            }
+                        </div>
+
+                        <div className="max-w-sm">
+                            <label htmlFor='upload2' className="block file-upload-label font-medium">Please Upload Your Resume<br></br><br></br>
+                                <input id="upload2" type="file" onChange={upload2} hidden />
+                                <span className="sr-only">Choose your resume</span>
                                 <input
-                                    type="file"
-                                    accept=".pdf, .doc, .docx, .txt, .rtf"
+                                    type="text"
+                                    className="block w-full text-sm text-gray-500 file:me-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold  file:bg-blue-600 file:text-white  hover:file:bg-blue-700 file:disabled:opacity-50 file:disabled:pointer-events-nonedark:text-neutral-500 dark:file:bg-blue-500 dark:hover:file:bg-blue-400"
+                                    id="resume"
                                     onChange={interviewForm.handleChange}
                                     value={interviewForm.values.resume}
-                                    id="resume"
-                                    required=""
-                                    className="file-input"
                                 />
-                            
+
                             </label>
                             {
                                 (interviewForm.errors.resume && interviewForm.touched.resume) && (
@@ -268,6 +329,7 @@ const Interview = () => {
                                 )
                             }
                         </div>
+
                         <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
                             Submit
                         </button>

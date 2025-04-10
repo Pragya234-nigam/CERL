@@ -62,33 +62,29 @@ const BrowseInterview = () => {
         <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
             <div className="text-center">
                 <h1 className="text-3xl text-gray-800 font-semibold">
-                    Interview Details
+                    List of Interviewers
                 </h1>
                 <p className="mt-3 text-gray-500">
-                    Interview Details are listed below. You can click on the interview to view more details about it.
+                    Interviewers are listed below. You can click on the interview to view more details about it.
                 </p>
             </div>
-            <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 ">
                 {
                     interviewData.map((item, key) => (
                         <article className="max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
                             <Link href={'/interview-detail/' + item._id} >
-                                <img src={item.img} loading="lazy" alt={item.title} className="w-full h-48 rounded-t-md" />
+    
                                 <div className="flex item-center mt-2 pt-3 ml-4 mr-2">
-                                    <div className="flex-none w-10 h-10 rounded-full">
-                                        <img src={item.authorLogo} className="w-full h-full rounded-full" alt={item.authorName} />
-                                    </div>
-                                    <div className="ml-3">
-                                        <span className="block text-gray-900">{item.email}</span>
-                                        <span className="block text-gray-400 text-sm">{item.date}</span>
+                                    
+                                     
+                                    <div className="flex-none h-16">
+                                    
+                                        <span className="block text-gray-900">{item.name}</span>
+                                        <span className="block text-gray-400 text-sm">{item.jobType}</span>
+                                        
                                     </div>
                                 </div>
-                                <div className="pt-3 ml-4 mr-2 mb-3">
-                                    <h3 className="text-xl text-gray-900">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-gray-400 text-sm mt-1">{item.address}</p>
-                                </div>
+                                
                             </Link>
                         </article>
                     ))
