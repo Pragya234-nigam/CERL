@@ -2,25 +2,40 @@
 import React from 'react'
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+const ISSERVER = typeof window === 'undefined';
+
 const LoginSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(2, 'Too Short!')
-        .max(50, 'Too Long!')
-        .required('Required'),
+    password: Yup.string()
+        .required('Password is required'),
     email: Yup.string().email('Invalid email').required('Required'),
 
 });
 const Login = () => {
+    const router = useRouter();
+
+
     const loginForm = useFormik({
         initialValues: {
             email: '',
             password: '',
         },
         onSubmit: (values) => {
-            console.log(values);
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/company/authenticate`, values)
+                .then((result) => {
+                    !ISSERVER && localStorage.setItem('company', result.data.token);
+                    toast.success("Login Successfull");
+                    router.push("/")
+                }).catch((err) => {
+                    toast.error("Invalid Credentials");
+                    console.log(err);
+                });
         },
         validationSchema: LoginSchema
-    })
+    });
+
     return (
         <div>
             <main className="w-full h-screen flex flex-col items-center justify-center px-4">

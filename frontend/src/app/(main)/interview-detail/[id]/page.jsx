@@ -38,6 +38,7 @@ const InterviewDetail = () => {
                 <h1 className="text-3xl text-gray-800 font-semibold">Interviewer Detail</h1>
             </div>
             <div className="mt-12 max-w-md mx-auto shadow-lg border rounded-md p-6">
+            <img src={interviewData.image} alt="interview" className="w-16 h-16 rounded-full object-cover" />
                 <h2 className="text-xl font-bold text-gray-900">{interviewData.name}</h2>
                 <p className="text-gray-600">Email: {interviewData.email}</p>
                 <p className="text-gray-600">Contact No: {interviewData.contactNo}</p>

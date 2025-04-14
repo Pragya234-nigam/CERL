@@ -19,13 +19,6 @@ app.use('/company', CompanyRouter);
 app.use('/interview',InterviewRouter)
 
 
-app.get('/', (req, res) => {
-    res.send('response from express');
-});
-app.get('/add', (req, res) => {
-    res.send('response from add');
-})
-
 app.listen(port, () => {
     console.log('Server is running');
 });

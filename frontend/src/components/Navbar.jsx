@@ -1,140 +1,118 @@
-'use client';
-import Link from 'next/link';
+"use client";
+
 import React, { useState } from 'react';
 
-const MenuBar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isEmployeeMenuOpen, setIsEmployeeMenuOpen] = useState(false);
-  const [isCompanyMenuOpen, setIsCompanyMenuOpen] = useState(false);
-  const [isInterviewMenuOpen, setIsInterviewMenuOpen] = useState(false);
+const Navbar = () => {
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleCompanyDropdown = () => {
+    setIsCompanyDropdownOpen(!isCompanyDropdownOpen);
+    setIsEmployeeDropdownOpen(false); // Close Employee dropdown when Company is toggled
   };
 
-  const toggleEmployeeMenu = () => {
-    setIsEmployeeMenuOpen(!isEmployeeMenuOpen);
-  };
-
-  const toggleCompanyMenu = () => {
-    setIsCompanyMenuOpen(!isCompanyMenuOpen);
-  };
-
-  const toggleInterviewMenu = () => {
-    setIsInterviewMenuOpen(!isInterviewMenuOpen);
+  const toggleEmployeeDropdown = () => {
+    setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen);
+    setIsCompanyDropdownOpen(false); // Close Company dropdown when Employee is toggled
   };
 
   return (
     <div>
-      <header className="flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-white text-sm py-3 dark:bg-neutral-800">
-        <nav className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
-          {/* Brand */}
-          <a href="/about"
-            className="flex-none font-semibold text-xl text-black focus:outline-hidden focus:opacity-80 dark:text-white cursor-pointer"
-            aria-label="Brand"
-            
-          >
-            HireQuest
-          </a>
-
-          {/* Main Menu */}
-          <div className="relative">
-            <button
-              onClick={toggleMenu}
-              className="font-medium text-gray-600 hover:text-gray-400 focus:outline-hidden dark:text-neutral-400 dark:hover:text-neutral-500 cursor-pointer"
-            >
-              Menu
-            </button>
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10">
-                {/* Employees */}
-                <div className="relative">
-                  <button
-                    onClick={toggleEmployeeMenu}
-                    className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
-                  >
-                    Employees
-                  </button>
-                  {isEmployeeMenuOpen && (
-                    <div className="absolute right-full top-0 mt-0 w-48 bg-white border rounded-md shadow-lg z-10">
-                      <Link href="/signup" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Signup
-
-                      </Link>
-                      <Link href="/login" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Login
-
-                      </Link>
-                      <Link href="/interview" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Interview form
-
-                      </Link>
-                      <Link href="/interview-details" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Interview Details
-
-                      </Link>
-                      <a
-                        href="/logout"
-                        className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                      >
-                        Log Out
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                {/* Company */}
-                <div className="relative">
-                  <button
-                    onClick={toggleCompanyMenu}
-                    className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
-                  >
-                    Company
-                  </button>
-                  {isCompanyMenuOpen && (
-                    <div className="absolute right-full top-0 mt-0 w-48 bg-white border rounded-md shadow-lg z-10">
-                      <Link href="/company-signup" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Signup
-
-                      </Link>
-                      <Link href="/company-login" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-                        Login
-                      </Link>
-
-                      <Link href="/interview-details" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                        Interview Details
-
-                      </Link>
-                      <a
-                        href="/logout"
-                        className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                      >
-                        Log Out
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-          
-                
-
-                {/* About */}
-                <Link href="/about" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-
-                  About
-
-                </Link>
-
-
-
+      <header>
+        <nav className="bg-white shadow">
+          <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+            <a href="/about" className="text-2xl font-bold text-gray-800">HireQuest</a>
+            <div className="flex items-center space-x-4">
+              {/* Company Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={toggleCompanyDropdown}
+                  className="font-medium text-gray-600 hover:text-gray-400 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-500 cursor-pointer"
+                >
+                  Company
+                </button>
+                {isCompanyDropdownOpen && (
+                  <div className="absolute mt-2 bg-white border rounded shadow-lg">
+                    <a
+                      href="/company-login"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Login
+                    </a>
+                    <a
+                      href="/company-signup"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Signup
+                    </a>
+                    <a
+                      href="/browse-interview"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Interviewers
+                    </a>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Logout
+                    </a>
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Employee Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={toggleEmployeeDropdown}
+                  className="font-medium text-gray-600 hover:text-gray-400 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-500 cursor-pointer"
+                >
+                  Employee
+                </button>
+                {isEmployeeDropdownOpen && (
+                  <div className="absolute mt-2 bg-white border rounded shadow-lg">
+                    <a
+                      href="/login"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Login
+                    </a>
+                    <a
+                      href="/signup"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Signup
+                    </a>
+                    <a
+                      href="/browse-interview"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Interviewers
+                    </a>
+                    <a
+                      href="/interview"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Interview Form
+                    </a>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    >
+                      Logout
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* About Page Link */}
+              <a
+                href="/about"
+                className="font-medium text-gray-600 hover:text-gray-400 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-500"
+              >
+                About
+              </a>
+            </div>
           </div>
         </nav>
       </header>
@@ -142,4 +120,4 @@ const MenuBar = () => {
   );
 };
 
-export default MenuBar;
+export default Navbar;

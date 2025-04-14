@@ -20,6 +20,7 @@ const InterviewSchema = Yup.object().shape({
 const Interview = () => {
 
     const router = useRouter();
+    const token = localStorage.getItem('company');
 
     const interviewForm = useFormik({
         initialValues: {
@@ -39,10 +40,14 @@ const Interview = () => {
             console.log(values);
             //send values to backend
 
-            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/interview/add`, values)//Json direct//asynchronous no time to wait then catch error handling async
+            axios.post(`${process.env.NEXT_PUBLIC_API_URL}/interview/add`, values, {
+                headers: {
+                    'x-auth-token' : token
+                }
+            })//Json direct//asynchronous no time to wait then catch error handling async
                 .then((result) => {
                     toast.success('Interview Information Submitted Successfully');
-                    router.push('/login');
+                    router.push('/browse-interview');
                 }).catch((err) => {
                     console.log(err);
                     toast.error('Interview Information Submitted Failed');
@@ -58,11 +63,12 @@ const Interview = () => {
         fd.append('file', file);
         fd.append('upload_preset', 'interview');
         fd.append('cloud_name', 'dcvorslf4')
-        axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/image/upload', fd)
+        axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/upload', fd)
             .then((res) => {
                 toast.success('File Uploaded Successfully');
                 console.log(res.data);
-                interviewForm.setFieldValue('image', res.data.url);
+                interviewForm.setFieldValue('image', res.data.secure_url);
+                // interviewForm.setFieldValue('resume', res.data.url);
             }).catch((err) => {
                 console.log(err);
                 toast.error('File Upload Failed');
@@ -74,10 +80,10 @@ const Interview = () => {
         const file = e.target.files[0];
         const fd1 = new FormData();
         fd1.append('file', file);
-        fd1.append('upload_preset', 'interview');
+        fd1.append('upload_preset', 'resume');
         fd1.append('cloud_name', 'dcvorslf4')
 
-             axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/resume/upload2', fd1)
+             axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/auto/upload', fd1)
             .then((res) => {
                 toast.success('File Uploaded Successfully');
                 console.log(res.data);
@@ -222,16 +228,23 @@ const Interview = () => {
                                 )
                             }
                         </div>
+                        
+
                         <div>
                             <label htmlFor="experience" className="font-medium">Experience</label>
-                            <input
-                                type="text"
+                            <select
                                 id="experience"
                                 onChange={interviewForm.handleChange}
                                 value={interviewForm.values.experience}
                                 required=""
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                            />
+                            >
+                                <option value="fresher">Fresher</option>
+                                <option value="0-2 years">0-2 years</option>
+                                <option value="3-5 years">3-5 years</option>
+                                <option value="6+ years">6+ years</option>
+                                
+                            </select>
                             {
                                 (interviewForm.errors.experience && interviewForm.touched.experience) && (
                                     <p className="text-xs text-red-600 mt-2" id="email-error">
@@ -298,6 +311,7 @@ const Interview = () => {
                                 <option value="Internship">Internship</option>
                                 <option value="Full Time">Full Time</option>
                                 <option value="Part Time">Part Time</option>
+                                <option value="freelance">Freelance</option>
                             </select>
                             {
                                 (interviewForm.errors.jobType && interviewForm.touched.jobType) && (

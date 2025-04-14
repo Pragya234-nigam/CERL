@@ -5,58 +5,51 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const BrowseInterview = () => {
-
     const [interviewData, setInterviewData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [filters, setFilters] = useState({
+        skill: "",
+        ageCategory: "",
+        experience: "",
+        education: "",
+        jobType: ""
+    });
+
+    // Arrays for filter options
+    const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails"];
+    const ageCategories = ["below 20", "20-30", "30-40", "40-50", "above 50"];
+    const experiences = ["fresher","0-2 years", "3-5 years", "6+ years"];
+    const educations = ["10th", "12th", "Graduate", "Post Graduate"," PhD"];
+    const jobTypes = ["Internship","Full-Time", "Part-Time", "Freelance"];
 
     const fetchInterview = async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/interview/getall`);
         console.log(res.data);
         setInterviewData(res.data);
-    }
+        setFilteredData(res.data);
+    };
 
     useEffect(() => {
-      fetchInterview();
-    }, [])
-    
+        fetchInterview();
+    }, []);
 
-    const posts = [
-        {
-            title: "What is SaaS? Software as a Service Explained",
-            desc: "Going into this journey, I had a standard therapy regimen, based on looking at the research literature. After I saw the movie, I started to ask other people what they did for their anxiety, and some",
-            img: "https://images.unsplash.com/photo-1556155092-490a1ba16284?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            authorLogo: "https://api.uifaces.co/our-content/donated/xZ4wg2Xj.jpg",
-            authorName: "Sidi dev",
-            date: "Jan 4 2022",
-            href: "javascript:void(0)"
-        },
-        {
-            title: "A Quick Guide to WordPress Hosting",
-            desc: "According to him, â€œI'm still surprised that this has happened. But we are surprised because we are so surprised.â€More revelations about Whittington will be featured in the film",
-            img: "https://images.unsplash.com/photo-1620287341056-49a2f1ab2fdc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            authorLogo: "https://api.uifaces.co/our-content/donated/FJkauyEa.jpg",
-            authorName: "Micheal",
-            date: "Jan 4 2022",
-            href: "javascript:void(0)"
-        },
-        {
-            title: "7 Promising VS Code Extensions Introduced in 2022",
-            desc: "I hope I remembered all the stuff that they needed to know. They're like, 'okay,' and write it in their little reading notebooks. I realized today that I have all this stuff that",
-            img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            authorLogo: "https://randomuser.me/api/portraits/men/46.jpg",
-            authorName: "Luis",
-            date: "Jan 4 2022",
-            href: "javascript:void(0)"
-        },
-        {
-            title: "How to Use Root C++ Interpreter Shell to Write C++ Programs",
-            desc: "The powerful gravity waves resulting from the impact of the planets' moons â€” four in total â€” were finally resolved in 2015 when gravitational microlensing was used to observe the",
-            img: "https://images.unsplash.com/photo-1617529497471-9218633199c0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-            authorLogo: "https://api.uifaces.co/our-content/donated/KtCFjlD4.jpg",
-            authorName: "Lourin",
-            date: "Jan 4 2022",
-            href: "javascript:void(0)"
-        }
-    ]
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters({ ...filters, [name]: value });
+    };
+
+    useEffect(() => {
+        const filtered = interviewData.filter(item => {
+            return (
+                (!filters.skill || item.skills?.toLowerCase().includes(filters.skill.toLowerCase())) &&
+                (!filters.ageCategory || item.ageCategory === filters.ageCategory) &&
+                (!filters.experience || item.experience === filters.experience) &&
+                (!filters.education || item.education === filters.education) &&
+                (!filters.jobType || item.jobType === filters.jobType)
+            );
+        });
+        setFilteredData(filtered);
+    }, [filters, interviewData]);
 
     return (
         <section className="mt-12 mx-auto px-4 max-w-screen-xl md:px-8">
@@ -68,31 +61,85 @@ const BrowseInterview = () => {
                     Interviewers are listed below. You can click on the interview to view more details about it.
                 </p>
             </div>
-            <div className="mt-12 ">
+
+            {/* Filters Section */}
+            <div className="mt-8 flex flex-wrap gap-4 justify-center">
+                <select
+                    name="skill"
+                    value={filters.skill}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded"
+                >
+                    <option value="">Filter by skill</option>
+                    {skills.map(skill => (
+                        <option key={skill} value={skill.toLowerCase()}>{skill}</option>
+                    ))}
+                </select>
+                <select
+                    name="ageCategory"
+                    value={filters.ageCategory}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded"
+                >
+                    <option value="">Filter by age category</option>
+                    {ageCategories.map(age => (
+                        <option key={age} value={age}>{age}</option>
+                    ))}
+                </select>
+                <select
+                    name="experience"
+                    value={filters.experience}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded"
+                >
+                    <option value="">Filter by experience</option>
+                    {experiences.map(exp => (
+                        <option key={exp} value={exp}>{exp}</option>
+                    ))}
+                </select>
+                <select
+                    name="education"
+                    value={filters.education}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded"
+                >
+                    <option value="">Filter by education</option>
+                    {educations.map(edu => (
+                        <option key={edu} value={edu.toLowerCase()}>{edu}</option>
+                    ))}
+                </select>
+                <select
+                    name="jobType"
+                    value={filters.jobType}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded"
+                >
+                    <option value="">Filter by job type</option>
+                    {jobTypes.map(job => (
+                        <option key={job} value={job.toLowerCase()}>{job}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="mt-12">
                 {
-                    interviewData.map((item, key) => (
+                    filteredData.map((item, key) => (
                         <article className="max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
-                            <Link href={'/interview-detail/' + item._id} >
-    
+                            <Link href={'/interview-detail/' + item._id}>
                                 <div className="flex item-center mt-2 pt-3 ml-4 mr-2">
-                                    
-                                     
                                     <div className="flex-none h-16">
-                                    
+                                        <img src={item.image} alt="interview" className="w-16 h-16 rounded-full object-cover" />
                                         <span className="block text-gray-900">{item.name}</span>
                                         <span className="block text-gray-400 text-sm">{item.jobType}</span>
-                                        
                                     </div>
                                 </div>
-                                
                             </Link>
                         </article>
                     ))
                 }
             </div>
         </section>
-    )
-}
-
+    );
+};
 
 export default BrowseInterview;
