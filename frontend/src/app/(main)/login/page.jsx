@@ -25,7 +25,7 @@ const Login = () => {
                 .then((result) => {
                     !ISSERVER && localStorage.setItem('user', JSON.stringify(result.data.token))
                     toast.success("Login Successfull");
-                    router.push("/")
+                    router.push("/about-employee")
                 }).catch((err) => {
                     toast.error("Invalid Credentials");
                     console.log(err);

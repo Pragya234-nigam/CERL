@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useAppContext } from '../context/appContext';
 
 const Navbar = () => {
+  const { logout } = useAppContext();
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
@@ -57,12 +59,12 @@ const Navbar = () => {
                     >
                       Manage Interview
                     </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    <button
+                      onClick={logout}
+                      className="bg-blue-500 text-white px-9 py-1 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300"
                     >
                       Logout
-                    </a>
+                    </button>
                   </div>
                 )}
               </div>
@@ -101,12 +103,12 @@ const Navbar = () => {
                     >
                       Interview Form
                     </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
+                    <button
+                      onClick={logout}
+                      className="bg-blue-500 text-white px-9 py-1 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300"
                     >
                       Logout
-                    </a>
+                    </button>
                   </div>
                 )}
               </div>
