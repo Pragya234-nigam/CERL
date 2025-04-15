@@ -90,7 +90,7 @@ const Navbar = () => {
                       Interviewers
                     </a>
                     <a
-                      href="/interview"
+                      href="/company/add-interview"
                       className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
                     >
                       Interview Form
