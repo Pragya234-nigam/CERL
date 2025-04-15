@@ -1,6 +1,7 @@
 const { Schema, model, Types } = require('../connection');
 const mySchema = new Schema({
     company: { type: Types.ObjectId, ref: 'company' },
+    panel: [{ type: Types.ObjectId, ref: 'company' }],
     image: String,
     name: String,
     email: { type: String, required: true },

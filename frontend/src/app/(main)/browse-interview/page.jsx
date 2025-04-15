@@ -39,10 +39,11 @@ const BrowseInterview = () => {
     };
 
     useEffect(() => {
+        
         const filtered = interviewData.filter(item => {
             return (
                 (!filters.skill || item.skills?.toLowerCase().includes(filters.skill.toLowerCase())) &&
-                (!filters.ageCategory || item.ageCategory === filters.ageCategory) &&
+                (!filters.ageCategory || item.age === filters.ageCategory) &&
                 (!filters.experience || item.experience === filters.experience) &&
                 (!filters.education || item.education === filters.education) &&
                 (!filters.jobType || item.jobType === filters.jobType)

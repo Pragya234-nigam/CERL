@@ -16,6 +16,30 @@ router.post('/add', verifyToken, (req, res) => {
         });
 });
 
+router.post('/join', verifyToken, (req, res) => {
+    const { panelId, company } = req.body;
+
+    if (!panelId || !company) {
+        return res.status(400).json({ message: "Panel ID and Company are required" });
+    }
+
+    // Add company to the interview panel
+    Model.findByIdAndUpdate(
+        panelId,
+        { $push: { panel: { company } } }, // Assuming 'panel' is an array in the model
+        { new: true }
+    )
+        .then((result) => {
+            if (!result) {
+                return res.status(404).json({ message: "Panel not found" });
+            }
+            res.status(200).json({ message: "Successfully joined the panel", panel: result });
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).json({ message: "Error joining the panel", error: err });
+        });
+});
 
 router.get('/getbyid/:id', (req, res) => {
     Model.findById(req.params.id)
@@ -27,7 +51,7 @@ router.get('/getbyid/:id', (req, res) => {
 });
 
 router.get('/getbycompany', verifyToken, (req, res) => {
-    Model.find({company : req.user._id})
+    Model.find({ company: req.user._id })
         .then((result) => {
             res.status(200).json(result);
         }).catch((err) => {
@@ -61,6 +85,5 @@ router.delete('/delete/:id', (req, res) => {
             res.status(500).json(err);
         });
 });
-
 
 module.exports = router;

@@ -3,6 +3,7 @@ const UserRouter = require('./routers/userRouter');
 const cors = require('cors');
 const CompanyRouter= require('./routers/companyRouter');
 const InterviewRouter=require('./routers/interviewRouter');
+const ApplicationRouter=require('./routers/applicationRouter')
 
 const app = express();
 const port = 5000;
@@ -16,7 +17,9 @@ app.use('/user', UserRouter);
 
 app.use('/company', CompanyRouter);
 
-app.use('/interview',InterviewRouter)
+app.use('/interview',InterviewRouter);
+
+app.use('/application',ApplicationRouter);
 
 
 app.listen(port, () => {
