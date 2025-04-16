@@ -18,9 +18,9 @@ const BrowseInterview = () => {
     // Arrays for filter options
     const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails","MERN"];
     const ageCategories = ["below 20", "20-30", "30-40", "40-50", "above 50"];
-    const experiences = ["fresher", "0-2 years", "3-5 years", "6+ years"];
+    const experiences = ["Fresher", "0-2 years", "3-5 years", "6+ years"];
     const educations = ["10th", "12th", "Graduate", "Post Graduate", "PhD"];
-    const jobTypes = ["Internship", "Full-Time", "Part-Time", "Freelance"];
+    const jobTypes = ["Internship", "Full Time", "Part Time", "Freelance"];
 
     const fetchInterview = async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/interview/getall`);
