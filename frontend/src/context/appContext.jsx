@@ -15,7 +15,7 @@ export const AppProvider = ({ children }) => {
         localStorage.removeItem('company'); // Remove company token
         setUser(null);
         setCompany(null);
-        router.push('/login'); // Redirect to login page
+        router.push('/about'); // Redirect to login page
     };
 
     return (

@@ -3,11 +3,13 @@ import axios from 'axios';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useAppContext } from '@/context/appContext'; // Import the AppContext
 
 const InterviewDetail = () => {
     const [interviewData, setInterviewData] = useState(null); // State for a single interviewer's data
     const [loading, setLoading] = useState(true); // State for loading
     const { id } = useParams();
+    const { company } = useAppContext(); // Access the company object from the context
     console.log('Interview ID:', id);
 
     const fetchInterview = async () => {
@@ -61,9 +63,28 @@ const InterviewDetail = () => {
         }
     };
 
-    const handleJoinPanel = () => {
-        toast('Join Panel button clicked');
-        // Add logic for joining the panel
+    const handleJoinPanel = async () => {
+        try {
+            const token = localStorage.getItem('company'); // Retrieve the company token
+            console.log('Company Token:', token);
+            if (!token) {
+                toast.error('You must be logged in as a company to join the panel.');
+                return;
+            }
+
+
+            const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/interview/join/${id}`, {}, {
+                headers: {
+                    'x-auth-token': token,
+                },
+            });
+
+            console.log('Join Panel Response:', res.data);
+            toast.success('Successfully joined the panel!');
+        } catch (error) {
+            console.error('Error joining the panel:', error.response?.data || error.message);
+            toast.error('Failed to join the panel.');
+        }
     };
 
     return (

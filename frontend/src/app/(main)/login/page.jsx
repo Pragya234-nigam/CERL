@@ -41,7 +41,7 @@ const Login = () => {
                         <img src="https://tse2.mm.bing.net/th?id=OIP.M3ad2UaeqGbcO8i_gO6VUgHaD4&pid=Api&P=0&h=180" height={20} width={250} className="mx-auto" />
                         <div className="mt-5">
                             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">
-                                Log in to your account
+                                Log into Employee account
                             </h3>
                         </div>
                     </div>

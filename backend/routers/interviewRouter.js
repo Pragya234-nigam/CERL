@@ -16,17 +16,11 @@ router.post('/add', verifyToken, (req, res) => {
         });
 });
 
-router.post('/join', verifyToken, (req, res) => {
-    const { panelId, company } = req.body;
-
-    if (!panelId || !company) {
-        return res.status(400).json({ message: "Panel ID and Company are required" });
-    }
-
+router.put('/join/:id', verifyToken, (req, res) => {
     // Add company to the interview panel
     Model.findByIdAndUpdate(
-        panelId,
-        { $push: { panel: { company } } }, // Assuming 'panel' is an array in the model
+        req.params.id,
+        { $push: { panel: req.user._id } }, // Assuming 'panel' is an array in the model
         { new: true }
     )
         .then((result) => {

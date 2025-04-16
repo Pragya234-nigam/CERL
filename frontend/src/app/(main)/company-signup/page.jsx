@@ -52,7 +52,7 @@ const SignUp = () => {
       axios.post(`${process.env.NEXT_PUBLIC_API_URL}/company/add`, values)//Json direct//asynchronous no time to wait then catch error handling async
         .then((result) => {
           toast.success('Company Registered Successfully');
-          router.push('/login');
+          router.push('/about-company');
         }).catch((err) => {
           console.log(err);
           toast.error('Company Registration Failed');

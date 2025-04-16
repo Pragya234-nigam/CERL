@@ -16,7 +16,7 @@ const BrowseInterview = () => {
     });
 
     // Arrays for filter options
-    const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails"];
+    const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails","MERN"];
     const ageCategories = ["below 20", "20-30", "30-40", "40-50", "above 50"];
     const experiences = ["fresher", "0-2 years", "3-5 years", "6+ years"];
     const educations = ["10th", "12th", "Graduate", "Post Graduate", "PhD"];

@@ -45,7 +45,7 @@ const SignUp = () => {
       axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/add`, values)//Json direct//asynchronous no time to wait then catch error handling async
         .then((result) => {
           toast.success('User Registered Successfully');
-          router.push('/login');
+          router.push('/about-employee');
         }).catch((err) => {
           console.log(err);
           toast.error('User Registration Failed');
