@@ -16,7 +16,7 @@ const BrowseInterview = () => {
     });
 
     // Arrays for filter options
-    const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails","MERN"];
+    const skills = ["JavaScript", "Python", "Java", "C++", "React", "Node.js", "Django", "Flask", "Ruby on Rails", "MERN"];
     const ageCategories = ["below 20", "20-30", "30-40", "40-50", "above 50"];
     const experiences = ["Fresher", "0-2 years", "3-5 years", "6+ years"];
     const educations = ["10th", "12th", "Graduate", "Post Graduate", "PhD"];
@@ -35,11 +35,18 @@ const BrowseInterview = () => {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters({ ...filters, [name]: value });
+
+        // Reset all filters except the one being changed
+        setFilters({
+            skill: name === "skill" ? value : "",
+            ageCategory: name === "ageCategory" ? value : "",
+            experience: name === "experience" ? value : "",
+            education: name === "education" ? value : "",
+            jobType: name === "jobType" ? value : "",
+        });
     };
 
     useEffect(() => {
-        
         const filtered = interviewData.filter(item => {
             return (
                 (!filters.skill || item.skills?.toLowerCase().includes(filters.skill.toLowerCase())) &&
@@ -129,8 +136,7 @@ const BrowseInterview = () => {
                         className="shadow-lg border rounded-md p-4 hover:shadow-xl transition-shadow duration-300"
                         key={key}
                     >
-                        <Link
-                         href={'/interview-detail/' + item._id}>
+                        <Link href={'/interview-detail/' + item._id}>
                             <div className="flex items-center space-x-4">
                                 <img
                                     src={item.image || '/default-avatar.png'}

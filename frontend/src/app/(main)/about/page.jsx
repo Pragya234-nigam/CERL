@@ -18,7 +18,7 @@ const About = () => {
                             HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments, HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.
                         </p>
                         <p className="text-base text-gray-700 md:text-lg">
-                            HireQuest is a leading staffing and workforce solutions company that specializes in providing temporary and permanent staffing services across a wide range of industries. With a focus on connecting employers with qualified and skilled workers, HireQuest ensures businesses have the talent they need to succeed in a dynamic and competitive marketplace.</p>
+                            HireQuest is a leading staffing and workforce solutions company that specializes in providing temporary and permanent staffing services across a wide range of industries. With a focus on connecting employers with qualified and skilled workers.HireQuest ensures businesses have the talent they need to succeed in a dynamic and competitive marketplace.</p>
                         <br />
                         <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">Mission Statement</h2><p className="text-base text-gray-700 md:text-lg">
                             Our mission is to deliver top-quality staffing solutions by leveraging innovative technology, extensive industry knowledge, and a vast network of qualified candidates. We aim to help businesses thrive through flexible, reliable, and tailored workforce solutions while providing workers with meaningful opportunities for career growth.</p> <br />
@@ -31,7 +31,7 @@ const About = () => {
                         <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">Why choose HireQuest?</h2>
                         <p className="text-base text-gray-700 md:text-lg">
                             <p className="text-base text-gray-700 md:text-lg">
-                                HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments, HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.
+                                HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments. HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.
                             </p>
                         </p>
                     </div>
