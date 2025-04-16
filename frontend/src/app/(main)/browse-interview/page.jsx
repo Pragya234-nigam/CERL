@@ -43,10 +43,10 @@ const BrowseInterview = () => {
         const filtered = interviewData.filter(item => {
             return (
                 (!filters.skill || item.skills?.toLowerCase().includes(filters.skill.toLowerCase())) &&
-                (!filters.ageCategory || item.age === filters.ageCategory) &&
-                (!filters.experience || item.experience === filters.experience) &&
-                (!filters.education || item.education === filters.education) &&
-                (!filters.jobType || item.jobType === filters.jobType)
+                (!filters.ageCategory || item.age?.toLowerCase() === filters.ageCategory.toLowerCase()) &&
+                (!filters.experience || item.experience?.toLowerCase() === filters.experience.toLowerCase()) &&
+                (!filters.education || item.education?.toLowerCase() === filters.education.toLowerCase()) &&
+                (!filters.jobType || item.jobType?.toLowerCase() === filters.jobType.toLowerCase())
             );
         });
         setFilteredData(filtered); // Update the filteredData state
@@ -129,7 +129,8 @@ const BrowseInterview = () => {
                         className="shadow-lg border rounded-md p-4 hover:shadow-xl transition-shadow duration-300"
                         key={key}
                     >
-                        <Link href={'/interview-detail/' + item._id}>
+                        <Link
+                         href={'/interview-detail/' + item._id}>
                             <div className="flex items-center space-x-4">
                                 <img
                                     src={item.image || '/default-avatar.png'}
