@@ -13,6 +13,7 @@ const mySchema = new Schema({
     address: { type: String, required: true },
     jobType: { type: String, required: true },
     resume: { type: String, required: true },
+    datetime: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 module.exports = model('interview', mySchema);
