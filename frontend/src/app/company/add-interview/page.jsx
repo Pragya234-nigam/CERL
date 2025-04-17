@@ -35,6 +35,7 @@ const Interview = () => {
             address: '',
             jobType: '',
             resume: '',
+            datetime: ''
         },
         onSubmit: (values) => {
             console.log(values);
@@ -321,6 +322,24 @@ const Interview = () => {
                                 )
                             }
                         </div>
+                        <div>
+                            <label htmlFor="datetime" className="font-medium">Select Date and Time</label>
+                            <input
+                                type="datetime-local"
+                                id="datetime"
+                                onChange={interviewForm.handleChange}
+                                value={interviewForm.values.datetime}
+                                required
+                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                            />
+                            {
+                                (interviewForm.errors.datetime && interviewForm.touched.datetime) && (
+                                    <p className="text-xs text-red-600 mt-2" id="datetime-error">
+                                        {interviewForm.errors.datetime}
+                                    </p>
+                                )
+                            }
+                        </div>
 
                         <div className="max-w-sm">
                             <label htmlFor='upload2' className="block file-upload-label font-medium">Please Upload Your Resume<br></br><br></br>
@@ -343,6 +362,8 @@ const Interview = () => {
                                 )
                             }
                         </div>
+
+                        
 
                         <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
                             Submit
