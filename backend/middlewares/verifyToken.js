@@ -8,7 +8,7 @@ const verifyToken = (req, res, next) => {
         return res.status(403).json({ message: "No token provided" });
     }
 
-    console.log("Token received:", token);
+    // console.log("Token received:", token);
     
 
 

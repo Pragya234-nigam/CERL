@@ -55,6 +55,8 @@ router.post('/authenticate', (req, res) => {
     console.log(req.body);
     Model.findOne(req.body)
         .then((result) => {
+            console.log(result);
+            
             if (result) {
                 const { _id, fname, lname, email } = result
                 const payload = { _id, fname, lname, email };

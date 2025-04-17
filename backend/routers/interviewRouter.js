@@ -45,11 +45,37 @@ router.get('/getbyid/:id', (req, res) => {
 });
 
 router.get('/getbycompany', verifyToken, (req, res) => {
-    Model.find({ company: req.user._id })
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
+    const companyId = req.user._id;
+    
+    Model.find({ company: companyId })
+        .then((interviews) => {
+            res.status(200).json(interviews);
+        })
+        .catch((err) => {
+            console.error('Error fetching company interviews:', err);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch company interviews',
+                error: err.message
+            });
+        });
+});
+
+router.get('/panel/interviews', verifyToken, (req, res) => {
+    const companyId = req.user._id;
+    console.log(companyId);
+    
+    Model.find({ panel: companyId })
+        .then((interviews) => {
+            res.status(200).json(interviews);
+        })
+        .catch((err) => {
+            console.error('Error fetching panel interviews:', err);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch panel interviews',
+                error: err.message
+            });
         });
 });
 
