@@ -5,15 +5,18 @@ import { useFormik } from 'formik';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAppContext } from '@/context/appContext';
+
 const ISSERVER = typeof window === 'undefined';
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Required'),
     password: Yup.string().required('Required'),
 });
-const Login = () => {
 
+const Login = () => {
     const router = useRouter();
+    const { setUser } = useAppContext();
 
     const loginForm = useFormik({
         initialValues: {
@@ -23,8 +26,9 @@ const Login = () => {
         onSubmit: (values) => {
             axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values)
                 .then((result) => {
-                    !ISSERVER && localStorage.setItem('user', JSON.stringify(result.data.token))
-                    toast.success("Login Successfull");
+                    !ISSERVER && localStorage.setItem('user', result.data.token);
+                    setUser(result.data); // Store full user data in context
+                    toast.success("Login Successful");
                     router.push("/about-employee")
                 }).catch((err) => {
                     toast.error("Invalid Credentials");
@@ -33,6 +37,7 @@ const Login = () => {
         },
         validationSchema: LoginSchema
     })
+
     return (
         <div>
             <main className="w-full h-screen flex flex-col items-center justify-center px-4">
@@ -53,14 +58,12 @@ const Login = () => {
                                 id="email"
                                 onChange={loginForm.handleChange}
                                 value={loginForm.values.email}
-
                                 required=""
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password"
-                                className="font-medium"> Password </label>
+                            <label htmlFor="password" className="font-medium"> Password </label>
                             <input
                                 type="password"
                                 id="password"
@@ -85,7 +88,6 @@ const Login = () => {
                     </p>
                 </div>
             </main>
-
         </div>
     )
 }

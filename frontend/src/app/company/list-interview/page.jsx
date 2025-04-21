@@ -64,8 +64,11 @@ const ListInterview = () => {
           <div className="grid gap-4">
             {companyInterviews.map((interview) => (
               <div key={interview._id} className="p-4 border rounded-lg shadow-sm">
-                <h3 className="font-bold">{interview.title || 'Untitled Interview'}</h3>
-                <p className="text-gray-600">Date: {new Date(interview.date).toLocaleDateString()}</p>
+                <h3 className="font-bold">{interview.name || 'Untitled Interview'}</h3>
+                <p className="text-gray-600">Date: {new Date(interview.createdAt).toLocaleDateString()}</p>
+                 <p className="text-gray-600">Interview Date: {new Date(interview.date).toLocaleDateString()}</p>
+                <p className="text-gray-600">Interview Link: {interview.link}</p>
+
                 <p>Status: {interview.status || 'Not specified'}</p>
                 {interview.meetLink && (
                   <button 
@@ -90,8 +93,11 @@ const ListInterview = () => {
           <div className="grid gap-4">
             {panelInterviews.map((interview) => (
               <div key={interview._id} className="p-4 border rounded-lg shadow-sm bg-blue-50">
-                <h3 className="font-bold">{interview.title || 'Untitled Interview'}</h3>
-                <p className="text-gray-600">Date: {new Date(interview.date).toLocaleDateString()}</p>
+                <h3 className="font-bold">{interview.name || 'Untitled Interview'}</h3>
+                <p className="text-gray-600">Date: {new Date(interview.createdAt).toLocaleDateString()}</p>
+                <p className="text-gray-600">Interview Date: {new Date(interview.date).toLocaleDateString()}</p>
+                <p className="text-gray-600">Interview Link: {interview.link}</p>
+
                 <p>Status: {interview.status || 'Not specified'}</p>
                 <p className="text-sm text-blue-600">You are a panel member</p>
                 {interview.meetLink && (

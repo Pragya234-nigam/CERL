@@ -77,7 +77,7 @@ const ManageInterview = () => {
                   <td className="border border-gray-300 px-4 py-2">{interview.name}</td>
                   <td className="border border-gray-300 px-4 py-2">{interview.description}</td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {new Date(interview.date).toLocaleDateString()}
+                    {new Date(interview.createdAt).toLocaleDateString()}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     <button

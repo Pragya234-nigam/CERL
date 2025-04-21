@@ -1,25 +1,50 @@
 'use client';
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // State for employee
-    const [company, setCompany] = useState(null); // State for company
+    const [user, setUser] = useState(null);
+    const [company, setCompany] = useState(null);
     const router = useRouter();
 
-    // Logout function for both employee and company
-    const logout = () => {
-        localStorage.removeItem('user'); // Remove employee token
-        localStorage.removeItem('company'); // Remove company token
-        setUser(null);
+    // Load auth state on mount
+    useEffect(() => {
+        const userToken = localStorage.getItem('user');
+        const companyToken = localStorage.getItem('company');
+        
+        if (userToken) {
+            setUser(userToken);
+        }
+        if (companyToken) {
+            setCompany(companyToken);
+        }
+    }, []);
+
+    // Logout function for company
+    const companyLogout = () => {
+        localStorage.removeItem('company');
         setCompany(null);
-        router.push('/about'); // Redirect to login page
+        router.push('/about');
+    };
+
+    // Logout function for employee
+    const employeeLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        router.push('/about');
     };
 
     return (
-        <AppContext.Provider value={{ user, setUser, company, setCompany, logout }}>
+        <AppContext.Provider value={{ 
+            user, 
+            setUser, 
+            company, 
+            setCompany, 
+            companyLogout, 
+            employeeLogout 
+        }}>
             {children}
         </AppContext.Provider>
     );

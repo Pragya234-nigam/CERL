@@ -1,7 +1,18 @@
 const { Schema, model, Types } = require('../connection');
 const mySchema = new Schema({
     company: { type: Types.ObjectId, ref: 'company' },
-    panel: [{ type: Types.ObjectId, ref: 'company' }],
+    panel: [
+        {
+            type: Types.ObjectId,
+            ref: 'company',
+            validate: {
+                validator: function (value) {
+                    return value.length <= 5; // Limit the panel to 5 companies
+                },
+                message: 'Panel cannot have more than 5 companies'
+            }
+        }
+    ],
     image: String,
     name: String,
     email: { type: String, required: true },
@@ -13,7 +24,9 @@ const mySchema = new Schema({
     address: { type: String, required: true },
     jobType: { type: String, required: true },
     resume: { type: String, required: true },
-    datetime: { type: String, required: true },
+    date: { type: Date, required: true },
     createdAt: { type: Date, default: Date.now }
 });
+
 module.exports = model('interview', mySchema);
+

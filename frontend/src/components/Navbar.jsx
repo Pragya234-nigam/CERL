@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppContext } from "../context/appContext";
 
 const Navbar = () => {
-  const { logout } = useAppContext();
+  const { companyLogout, employeeLogout, company, user } = useAppContext();
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
@@ -13,12 +13,12 @@ const Navbar = () => {
 
   const toggleCompanyDropdown = () => {
     setIsCompanyDropdownOpen(!isCompanyDropdownOpen);
-    setIsEmployeeDropdownOpen(false); // Close Employee dropdown when Company is toggled
+    setIsEmployeeDropdownOpen(false);
   };
 
   const toggleEmployeeDropdown = () => {
     setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen);
-    setIsCompanyDropdownOpen(false); // Close Company dropdown when Employee is toggled
+    setIsCompanyDropdownOpen(false);
   };
 
   const handleClickOutside = (event) => {
@@ -57,42 +57,55 @@ const Navbar = () => {
                   </button>
                   {isCompanyDropdownOpen && (
                     <div className="absolute mt-2 w-48 bg-white shadow-lg rounded-md">
-                      <a
-                        href="/company-login"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Login
-                      </a>
-                      <a
-                        href="/company-signup"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Signup
-                      </a>
-                      <a
-                        href="/company/add-interview"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Interview Form
-                      </a>
-                      <a
-                        href="/browse-interview"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Interviewers
-                      </a>
-                      <a
-                        href="/company/manage-interview"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Manage Interview
-                      </a>
-                      <button
-                        onClick={logout}
-                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Logout
-                      </button>
+                      {!company ? (
+                        <>
+                          <a
+                            href="/company-login"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Login
+                          </a>
+                          <a
+                            href="/company-signup"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Signup
+                          </a>
+                        </>
+                      ) : (
+                        <>
+                          <a
+                            href="/company/add-interview"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Interview Form
+                          </a>
+                          <a
+                            href="/browse-interview"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Browse Interviews
+                          </a>
+                          <a
+                            href="/company/manage-interview"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Manage Interview
+                          </a>
+                          <a
+                            href="/company/list-interview"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            List Interview
+                          </a>
+                          <button
+                            onClick={companyLogout}
+                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Logout
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -106,33 +119,46 @@ const Navbar = () => {
                   </button>
                   {isEmployeeDropdownOpen && (
                     <div className="absolute mt-2 w-48 bg-white shadow-lg rounded-md">
-                      <a
-                        href="/login"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Login
-                      </a>
-                      <a
-                        href="/signup"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Signup
-                      </a>
-                      <a
-                        href="/company/add-interview"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Interview Form
-                      </a>
-                      <button
-                        onClick={logout}
-                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                      >
-                        Logout
-                      </button>
+                      {!user ? (
+                        <>
+                          <a
+                            href="/login"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Login
+                          </a>
+                          <a
+                            href="/signup"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Signup
+                          </a>
+                        </>
+                      ) : (
+                        <>
+                          <a
+                            href="/browse-interview"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Browse Interviews
+                          </a>
+                          <a
+                            href="/user/profile"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            My Profile
+                          </a>
+                          <button
+                            onClick={employeeLogout}
+                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          >
+                            Logout
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
-                
+                </div>
                 <a
                   href="/about"
                   className="text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
@@ -140,9 +166,6 @@ const Navbar = () => {
                   About
                 </a>
               </div>
-              </div>
-                
-             
             </div>
           </div>
         </nav>
