@@ -3,12 +3,12 @@ const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
     const token = req.headers["x-auth-token"];
+    // console.log("Token received:", token);
 
     if (!token) {
         return res.status(403).json({ message: "No token provided" });
     }
 
-    // console.log("Token received:", token);
     
 
 

@@ -9,6 +9,8 @@ export const AppProvider = ({ children }) => {
     const [company, setCompany] = useState(null);
     const router = useRouter();
 
+    
+
     // Load auth state on mount
     useEffect(() => {
         const userToken = localStorage.getItem('user');

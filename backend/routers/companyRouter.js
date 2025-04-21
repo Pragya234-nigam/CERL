@@ -3,6 +3,7 @@ const Model=require('../models/companyModel');
 const router=express.Router();
 require('dotenv').config()
 const jwt=require('jsonwebtoken');
+const verifyToken = require('../middlewares/verifyToken');
 
 router.post('/add',(req,res)=>{
     console.log(req.body);
@@ -25,8 +26,8 @@ router.get('/getall',(req,res)=>{
     });
 });
 
-router.get('/getbyid/:id',(req,res)=>{
-    Model.findById(req.params.id)
+router.get('/getcompany', verifyToken, (req,res)=>{
+    Model.findById(req.user._id)
     .then((result) => {
          res.status(200).json(result);
     }).catch((err) => {

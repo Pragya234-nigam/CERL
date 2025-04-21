@@ -5,18 +5,29 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAppContext } from '@/context/appContext'; // Import the AppContext
 
+
 const InterviewDetail = () => {
+    const companyToken = localStorage.getItem('company'); // Retrieve the user token from local storage
     const [interviewData, setInterviewData] = useState(null); // State for a single interviewer's data
     const [loading, setLoading] = useState(true); // State for loading
+    const [hasApplied, setHasApplied] = useState(false); // State for application status
+    const [isInPanel, setIsInPanel] = useState(false); // State for panel membership
     const { id } = useParams();
-    const { company } = useAppContext(); // Access the company object from the context
-    console.log('Interview ID:', id);
+    const { company, user } = useAppContext(); // Access the company and user objects from the context
+    // console.log('Interview ID:', id);
 
     const fetchInterview = async () => {
         try {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/interview/getbyid/${id}`); // Fetch specific interview data using the ID from the URL
             console.log(res.data);
             setInterviewData(res.data);
+            // Check if current company is in panel
+            if (companyToken) {
+                // const tokenData = JSON.parse(atob(company.split('.')[1]));
+                // console.log(tokenData);
+                checkApplicationStatus(res.data); // Check if the user has already applied
+                // setIsInPanel(res.data.panel.includes(tokenData._id));
+            }
             setLoading(false);
         } catch (error) {
             console.error('Error fetching interview data:', error);
@@ -24,9 +35,28 @@ const InterviewDetail = () => {
         }
     };
 
+    const checkApplicationStatus = async (data) => {
+        // console.log(companyToken);
+        
+        try {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/company/getcompany`, {
+                headers: {
+                    'x-auth-token': companyToken, // Pass the user token in the headers
+                }
+            });
+            console.log(res.data);
+            setIsInPanel(data.panel.includes(res.data._id)); // Check if the user has already applied
+        } catch (error) {
+            console.error('Error checking application status:', error);
+        }
+    };
+
     useEffect(() => {
         fetchInterview();
-    }, [id]);
+        if (user) {
+            checkApplicationStatus();
+        }
+    }, [id, user]);
 
     if (loading) {
         return <div className="text-center mt-12">Loading...</div>;
@@ -38,28 +68,32 @@ const InterviewDetail = () => {
 
     const handleApply = async () => {
         try {
-            const token = localStorage.getItem('user'); // Assuming the user token is stored in localStorage
-            if (!token) {
+            if (!user) {
                 toast.error('You must be logged in to apply.');
                 return;
             }
 
+            // Decode the JWT token to get user info
+            const tokenData = JSON.parse(atob(user.split('.')[1]));
+            const userId = tokenData._id;
+
             const applicationData = {
                 interviewId: id,
-                userId: 'currentUserId', // Replace with the actual user ID if available
+                userId: userId
             };
 
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/application/add`, applicationData, {
                 headers: {
-                    'x-auth-token': token,
+                    'x-auth-token': user,
                 },
             });
 
             toast.success('Application submitted successfully!');
             console.log('Application Response:', res.data);
+            setHasApplied(true); // Update application status
         } catch (error) {
             console.error('Error applying to the interview:', error);
-            toast.error('Failed to submit application.');
+            toast.error(error.response?.data?.error || 'Failed to submit application.');
         }
     };
 
@@ -72,7 +106,6 @@ const InterviewDetail = () => {
                 return;
             }
 
-
             const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/interview/join/${id}`, {}, {
                 headers: {
                     'x-auth-token': token,
@@ -81,9 +114,11 @@ const InterviewDetail = () => {
 
             console.log('Join Panel Response:', res.data);
             toast.success('Successfully joined the panel!');
+            setIsInPanel(true);
         } catch (error) {
-            console.error('Error joining the panel:', error.response?.data || error.message);
-            toast.error('Failed to join the panel.');
+            console.error('Error joining the panel:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to join the panel.';
+            toast.error(errorMessage);
         }
     };
 
@@ -107,18 +142,46 @@ const InterviewDetail = () => {
                     Resume: <a href={interviewData.resume} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">View Resume</a>
                 </p>
                 <div className="mt-6 flex justify-center gap-4">
-                    <button
-                        onClick={handleApply}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-                    >
-                        Apply
-                    </button>
-                    <button
-                        onClick={handleJoinPanel}
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-                    >
-                        Join Panel
-                    </button>
+                    {user ? (
+                        hasApplied ? (
+                            <button
+                                disabled
+                                className="bg-gray-500 text-white px-4 py-2 rounded cursor-not-allowed"
+                            >
+                                Already Applied
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleApply}
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                            >
+                                Apply
+                            </button>
+                        )
+                    ) : company ? (
+                        isInPanel ? (
+                            <button
+                                disabled
+                                className="bg-gray-500 text-white px-4 py-2 rounded cursor-not-allowed"
+                            >
+                                Already in Panel
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleJoinPanel}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
+                            >
+                                Join Panel
+                            </button>
+                        )
+                    ) : (
+                        <button
+                            onClick={() => toast.error('Please login as a user or company to proceed.')}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+                        >
+                            Login to Continue
+                        </button>
+                    )}
                 </div>
             </div>
         </section>

@@ -5,12 +5,21 @@ const mySchema = new Schema({
         {
             type: Types.ObjectId,
             ref: 'company',
-            validate: {
-                validator: function (value) {
-                    return value.length <= 5; // Limit the panel to 5 companies
+            validate: [
+                {
+                    validator: function (value) {
+                        return value.length <= 5; // Limit the panel to 5 companies
+                    },
+                    message: 'Panel cannot have more than 5 companies'
                 },
-                message: 'Panel cannot have more than 5 companies'
-            }
+                {
+                    validator: function(value) {
+                        // Check for duplicates by converting to Set and comparing lengths
+                        return new Set(value.map(v => v.toString())).size === value.length;
+                    },
+                    message: 'A company can only join the panel once'
+                }
+            ]
         }
     ],
     image: String,

@@ -16,23 +16,33 @@ router.post('/add', verifyToken, (req, res) => {
         });
 });
 
-router.put('/join/:id', verifyToken, (req, res) => {
-    // Add company to the interview panel
-    Model.findByIdAndUpdate(
-        req.params.id,
-        { $push: { panel: req.user._id } }, // Assuming 'panel' is an array in the model
-        { new: true }
-    )
-        .then((result) => {
-            if (!result) {
-                return res.status(404).json({ message: "Panel not found" });
-            }
-            res.status(200).json({ message: "Successfully joined the panel", panel: result });
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).json({ message: "Error joining the panel", error: err });
-        });
+router.put('/join/:id', verifyToken, async (req, res) => {
+    try {
+        // First check if the company is already in the panel
+        const interview = await Model.findById(req.params.id);
+        if (!interview) {
+            return res.status(404).json({ message: "Interview not found" });
+        }
+
+        // Check if company is already in panel
+        if (interview.panel.includes(req.user._id)) {
+            return res.status(400).json({ message: "You are already a member of this panel" });
+        }
+
+        // Add company to the interview panel
+        const result = await Model.findByIdAndUpdate(
+            req.params.id,
+            { $push: { panel: req.user._id } },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).json({ message: "Successfully joined the panel", panel: result });
+    } catch (err) {
+        console.error(err);
+        // Send the specific validation error message if available
+        const errorMessage = err.errors?.panel?.message || "Error joining the panel";
+        res.status(500).json({ message: errorMessage, error: err });
+    }
 });
 
 router.get('/getbyid/:id', (req, res) => {

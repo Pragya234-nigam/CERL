@@ -5,16 +5,25 @@ require('dotenv').config()
 const jwt=require('jsonwebtoken');
 const verifyToken = require('../middlewares/verifyToken');
 
-router.post('/add', verifyToken,(req,res)=>{
-    req.body.user = req.user._id;
-    console.log(req.body);
+router.post('/add', verifyToken, (req, res) => {
+    const { userId, interviewId } = req.body;
+    
+    // Validate required fields
+    if (!userId || !interviewId) {
+        return res.status(400).json({ error: 'userId and interviewId are required fields' });
+    }
 
-    new Model(req.body).save()
+    // Create new application with the validated data
+    new Model({
+        user: userId,
+        interview: interviewId,
+        createdAt: new Date()
+    }).save()
     .then((result) => {
         res.status(200).json(result);
     }).catch((err) => {
         console.log(err);
-        res.status(500).json(err);
+        res.status(500).json({ error: 'Error saving application', details: err.message });
     });
 });
 
@@ -53,6 +62,7 @@ router.delete('/delete/:id',(req,res)=>{
         res.status(500).json(err);
     });
 });
+
 router.post('/authenticate', (req, res) => {
     console.log(req.body);
     Model.findOne(req.body)
@@ -80,6 +90,16 @@ router.post('/authenticate', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
-})
+});
+
+router.get('/check/:userId/:interviewId', async (req, res) => {
+    try {
+        const { userId, interviewId } = req.params;
+        const application = await Model.findOne({ user: userId, interview: interviewId });
+        res.json({ hasApplied: !!application });
+    } catch (error) {
+        res.status(500).json({ error: 'Error checking application status' });
+    }
+});
 
 module.exports=router;
