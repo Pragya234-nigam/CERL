@@ -34,8 +34,9 @@ const Interview = () => {
             education: '',
             address: '',
             jobType: '',
-            resume: '',
-            datetime: ''
+            interviewDate: '',
+            interviewTime: '',
+            meetingLink: '',
         },
         onSubmit: (values) => {
             console.log(values);
@@ -322,46 +323,75 @@ const Interview = () => {
                                 )
                             }
                         </div>
-                        <div>
-                            <label htmlFor="datetime" className="font-medium">Select Date and Time</label>
-                            <input
-                                type="date"
-                                id="datetime"
-                                onChange={interviewForm.handleChange}
-                                value={interviewForm.values.date}
-                                required
-                                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
-                            />
-                            {
-                                (interviewForm.errors.datetime && interviewForm.touched.datetime) && (
-                                    <p className="text-xs text-red-600 mt-2" id="datetime-error">
-                                        {interviewForm.errors.datetime}
-                                    </p>
-                                )
-                            }
-                        </div>
-
-                        <div className="max-w-sm">
-                            <label htmlFor='upload2' className="block file-upload-label font-medium">Please Upload Your Resume<br></br><br></br>
-                                <input id="upload2" type="file" onChange={upload2} hidden />
-                                <span className="sr-only">Choose your resume</span>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="interviewDate"
+                                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+                            >
+                                date of interview
+                            </label><div className='flex gap-3'>
+                                <input
+                                    type="date"
+                                    name="interviewDate"
+                                    id="interviewDate"
+                                    onChange={interviewForm.handleChange}
+                                    value={interviewForm.values.interviewDate}
+                                    required=""
+                                    className="7w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
+                                {
+                                    (interviewForm.errors.interviewDate && interviewForm.touched.interviewDate) && (
+                                        <p className="text-xs text-red-600 mt-2" id="email-error">
+                                            {interviewForm.errors.interviewDate}
+                                        </p>
+                                    )
+                                }
+                            </div></div>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="interviewTime"
+                                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+                            >
+                                time of interview
+                            </label><div className='flex gap-3'>
+                                <input
+                                    type="time"
+                                    name="interviewTime"
+                                    id="interviewTime"
+                                    onChange={interviewForm.handleChange}
+                                    value={interviewForm.values.interviewTime}
+                                    required=""
+                                    className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
+                                {
+                                    (interviewForm.errors.address && interviewForm.touched.address) && (
+                                        <p className="text-xs text-red-600 mt-2" id="email-error">
+                                            {interviewForm.errors.interviewTime}
+                                        </p>
+                                    )
+                                }
+                            </div></div>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="meetingLink"
+                                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+                            >
+                                Meeting Link
+                            </label><div className='flex gap-3'>
                                 <input
                                     type="text"
-                                    className="block w-full text-sm text-gray-500 file:me-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold  file:bg-blue-600 file:text-white  hover:file:bg-blue-700 file:disabled:opacity-50 file:disabled:pointer-events-nonedark:text-neutral-500 dark:file:bg-blue-500 dark:hover:file:bg-blue-400"
-                                    id="resume"
+                                    name="meetingLink"
+                                    id="meetingLink"
                                     onChange={interviewForm.handleChange}
-                                    value={interviewForm.values.resume}
-                                />
-
-                            </label>
-                            {
-                                (interviewForm.errors.resume && interviewForm.touched.resume) && (
-                                    <p className="text-xs text-red-600 mt-2" id="email-error">
-                                        {interviewForm.errors.resume}
-                                    </p>
-                                )
-                            }
-                        </div>
+                                    value={interviewForm.values.meetingLink}
+                                    required=""
+                                    className=" w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" />
+                                {
+                                    (interviewForm.errors.meetingLink && interviewForm.touched.meetingLink) && (
+                                        <p className="text-xs text-red-600 mt-2" id="email-error">
+                                            {interviewForm.errors.meetingLink}
+                                        </p>
+                                    )
+                                }
+                            </div></div>
 
                         
 

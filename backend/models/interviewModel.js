@@ -32,8 +32,9 @@ const mySchema = new Schema({
     education: { type: String, required: true },
     address: { type: String, required: true },
     jobType: { type: String, required: true },
-    resume: { type: String, required: true },
-    date: { type: Date, required: true },
+    interviewDate: { type: Date, required: true },
+    interviewTime: { type: String, required: true },
+    meetingLink: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 

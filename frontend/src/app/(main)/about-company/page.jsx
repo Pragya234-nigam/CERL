@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 
 const CompanyPage = () => {
@@ -19,19 +20,25 @@ const CompanyPage = () => {
                 {/* Navigation Links Section */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Browse Interview */}
-                    <a
+                    <Link
                         href="/browse-interview"
                         className="block bg-yellow-500 text-white text-center py-4 rounded-lg shadow-lg hover:bg-yellow-600 transition duration-300"
                     >
                         Browse Interview
-                    </a>    
+                    </Link>    
                     {/* Manage Interview */}
-                    <a
+                    <Link
                         href="/company/manage-interview"
                         className="block bg-red-500 text-white text-center py-4 rounded-lg shadow-lg hover:bg-red-600 transition duration-300"
                     >
                         Manage Interview
-                    </a>
+                    </Link>
+                    <Link
+                        href="/company/add-interview"
+                        className="block bg-red-500 text-white text-center py-4 rounded-lg shadow-lg hover:bg-red-600 transition duration-300"
+                    >
+                        Add Interview
+                    </Link>
                 </div>
             </div>
         </section>

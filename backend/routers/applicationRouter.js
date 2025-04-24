@@ -5,35 +5,65 @@ require('dotenv').config()
 const jwt=require('jsonwebtoken');
 const verifyToken = require('../middlewares/verifyToken');
 
-router.post('/add', verifyToken, (req, res) => {
-    const { userId, interviewId } = req.body;
-    
-    // Validate required fields
-    if (!userId || !interviewId) {
-        return res.status(400).json({ error: 'userId and interviewId are required fields' });
+// Check if user has already applied
+router.get('/check/:interviewId', verifyToken, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { interviewId } = req.params;
+        
+        const existingApplication = await Model.findOne({ 
+            user: userId, 
+            interview: interviewId 
+        });
+        
+        res.json({ hasApplied: !!existingApplication });
+    } catch (err) {
+        res.status(500).json({ error: 'Error checking application status' });
     }
-
-    // Create new application with the validated data
-    new Model({
-        user: userId,
-        interview: interviewId,
-        createdAt: new Date()
-    }).save()
-    .then((result) => {
-        res.status(200).json(result);
-    }).catch((err) => {
-        console.log(err);
-        res.status(500).json({ error: 'Error saving application', details: err.message });
-    });
 });
 
-router.get('/getall',(req,res)=>{
-    Model.find()
-    .then((result) => {
-         res.status(200).json(result);
-    }).catch((err) => {
-        res.status(500).json(err);
-    });
+// Application submission endpoint
+router.post('/add', verifyToken, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { interviewId } = req.body;
+        
+        // Check if user has already applied
+        const existingApplication = await Model.findOne({ 
+            user: userId, 
+            interview: interviewId 
+        });
+
+        if (existingApplication) {
+            return res.status(400).json({ 
+                message: 'You have already applied for this interview' 
+            });
+        }
+
+        const newApplication = new Model({
+            user: userId,
+            interview: interviewId,
+            status: 'Pending',
+            createdAt: new Date()
+        });
+
+        const result = await newApplication.save();
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error submitting application' });
+    }
+});
+
+router.get('/getall', verifyToken, (req, res) => {
+    const userId = req.user._id;
+    Model.find({ user: userId })
+        .populate('interview')  // This will populate the interview details
+        .then((result) => {
+            res.status(200).json(result);
+        }).catch((err) => {
+            res.status(500).json(err);
+        });
 });
 
 router.get('/getbyid/:id',(req,res)=>{
@@ -92,13 +122,25 @@ router.post('/authenticate', (req, res) => {
         });
 });
 
-router.get('/check/:userId/:interviewId', async (req, res) => {
+// Get all applications for company's interviews
+router.get('/company/applications', verifyToken, async (req, res) => {
     try {
-        const { userId, interviewId } = req.params;
-        const application = await Model.findOne({ user: userId, interview: interviewId });
-        res.json({ hasApplied: !!application });
-    } catch (error) {
-        res.status(500).json({ error: 'Error checking application status' });
+        const companyId = req.user._id;
+        
+        const applications = await Model.find()
+            .populate('interview')  // Populate interview details
+            .populate('user', '-password')  // Populate user details except password
+            .exec();
+
+        // Filter applications for interviews created by this company
+        const companyApplications = applications.filter(app => 
+            app.interview && app.interview.company.toString() === companyId
+        );
+
+        res.status(200).json(companyApplications);
+    } catch (err) {
+        console.error('Error fetching company applications:', err);
+        res.status(500).json({ message: 'Error fetching applications' });
     }
 });
 

@@ -1,8 +1,25 @@
-const { Schema, model } = require('../connection');
-const mySchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-    interview: { type: Schema.Types.ObjectId, ref: 'interview', required: true },
-    createdAt: { type: Date, default: Date.now }
+const mongoose = require('mongoose');
+
+const applicationSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
+    },
+    interview: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'interviews',
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Accepted', 'Rejected'],
+        default: 'Pending'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
-module.exports = model('application', mySchema);
+module.exports = mongoose.model('applications', applicationSchema);
