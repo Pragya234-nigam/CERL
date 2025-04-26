@@ -37,7 +37,7 @@ const CompanyPage = () => {
                         href="/company/add-interview"
                         className="block bg-red-500 text-white text-center py-4 rounded-lg shadow-lg hover:bg-red-600 transition duration-300"
                     >
-                        Add Interview
+                        Interview Form
                     </Link>
                 </div>
             </div>

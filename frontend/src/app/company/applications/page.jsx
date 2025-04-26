@@ -7,6 +7,13 @@ import toast from 'react-hot-toast';
 const CompanyApplications = () => {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [filteredApplications, setFilteredApplications] = useState([]);
+    const [filters, setFilters] = useState({
+        status: '',
+        applicantName: '',
+        date: '',
+        education: ''
+    });
     const { company } = useAppContext();
 
     useEffect(() => {
@@ -33,6 +40,36 @@ const CompanyApplications = () => {
 
         fetchApplications();
     }, [company]);
+
+    useEffect(() => {
+        const filtered = applications.filter(app => {
+            const applicantName = `${app.user?.fname} ${app.user?.lname}`.toLowerCase();
+            return (
+                (!filters.status || app.status === filters.status) &&
+                (!filters.applicantName || applicantName.includes(filters.applicantName.toLowerCase())) &&
+                (!filters.date || new Date(app.createdAt).toLocaleDateString().includes(filters.date)) &&
+                (!filters.education || app.user?.education?.toLowerCase().includes(filters.education.toLowerCase()))
+            );
+        });
+        setFilteredApplications(filtered);
+    }, [filters, applications]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            status: '',
+            applicantName: '',
+            date: '',
+            education: ''
+        });
+    };
 
     const updateApplicationStatus = async (applicationId, newStatus) => {
         try {
@@ -65,11 +102,62 @@ const CompanyApplications = () => {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-6">Interview Applications</h1>
             
-            {applications.length === 0 ? (
-                <p className="text-gray-600">No applications received yet.</p>
+            {/* Filters */}
+            <div className="mb-6 space-y-4 bg-white p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        name="status"
+                        value={filters.status}
+                        onChange={handleFilterChange}
+                        className="border p-2 rounded focus:ring focus:ring-blue-300"
+                    >
+                        <option value="">Filter by Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+
+                    <input
+                        type="text"
+                        name="applicantName"
+                        placeholder="Search by applicant name"
+                        value={filters.applicantName}
+                        onChange={handleFilterChange}
+                        className="border p-2 rounded focus:ring focus:ring-blue-300"
+                    />
+
+                    <input
+                        type="text"
+                        name="date"
+                        placeholder="Filter by date"
+                        value={filters.date}
+                        onChange={handleFilterChange}
+                        className="border p-2 rounded focus:ring focus:ring-blue-300"
+                    />
+
+                    <input
+                        type="text"
+                        name="education"
+                        placeholder="Filter by education"
+                        value={filters.education}
+                        onChange={handleFilterChange}
+                        className="border p-2 rounded focus:ring focus:ring-blue-300"
+                    />
+                </div>
+                <button
+                    onClick={clearFilters}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                    Clear Filters
+                </button>
+            </div>
+            
+            {filteredApplications.length === 0 ? (
+                <p className="text-gray-600">No applications match your filters.</p>
             ) : (
                 <div className="space-y-6">
-                    {applications.map((application) => (
+                    {filteredApplications.map((application) => (
                         <div key={application._id} className="bg-white p-6 rounded-lg shadow-md">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>

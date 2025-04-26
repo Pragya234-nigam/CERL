@@ -1,14 +1,18 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const ManageInterview = () => {
   const [interviews, setInterviews] = useState([]);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   const fetchCompanyInterviews = async () => {
     try {
-      const token = localStorage.getItem('company'); // Assuming the token is stored in localStorage
+      const token = localStorage.getItem('company');
       if (!token) {
         throw new Error('No token found. Please log in.');
       }
@@ -28,6 +32,10 @@ const ManageInterview = () => {
 
   const handleDelete = async (id) => {
     try {
+      if (!confirm('Are you sure you want to delete this interview?')) {
+        return;
+      }
+
       const token = localStorage.getItem('company');
       if (!token) {
         throw new Error('No token found. Please log in.');
@@ -39,17 +47,31 @@ const ManageInterview = () => {
         },
       });
 
+      toast.success('Interview deleted successfully');
       setInterviews(interviews.filter((interview) => interview._id !== id));
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Failed to delete interview.');
+      toast.error(err.message || 'Failed to delete interview.');
     }
   };
 
-  const handleUpdate = (id) => {
-    // Redirect to the update page or open a modal for editing
-    console.log(`Update interview with ID: ${id}`);
-    // Example: window.location.href = `/update-interview/${id}`;
+  const handleUpdate = async (id) => {
+    try {
+      // Get the interview data
+      const interview = interviews.find(i => i._id === id);
+      if (!interview) {
+        throw new Error('Interview not found');
+      }
+
+      // Store the interview data in localStorage for the update form
+      localStorage.setItem('updateInterview', JSON.stringify(interview));
+      
+      // Redirect to the add-interview page with update parameter
+      router.push(`/company/add-interview?update=${id}`);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'Failed to prepare interview update.');
+    }
   };
 
   useEffect(() => {
@@ -66,8 +88,11 @@ const ManageInterview = () => {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Description</th>
-                <th className="border border-gray-300 px-4 py-2">Date</th>
+                <th className="border border-gray-300 px-4 py-2">Interview Date</th>
+                <th className="border border-gray-300 px-4 py-2">Interview Time</th>
+                <th className="border border-gray-300 px-4 py-2">Interview Link</th>
+                <th className="border border-gray-300 px-4 py-2">Code Link</th>
+                <th className="border border-gray-300 px-4 py-2">Panel Count</th>
                 <th className="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -75,26 +100,43 @@ const ManageInterview = () => {
               {interviews.map((interview) => (
                 <tr key={interview._id}>
                   <td className="border border-gray-300 px-4 py-2">{interview.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">{interview.description}</td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {new Date(interview.createdAt).toLocaleDateString()}
+                    {new Date(interview.interviewDate).toLocaleDateString()}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                  {interview.interviewTime}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Link href={interview.meetingLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline">
+                      {interview.meetingLink}
+                    </Link>
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <Link href={interview.codeLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline">
+                      {interview.codeLink}
+                    </Link>
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {interview.panel?.length || 0}/5
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     <button
                       onClick={() => handleUpdate(interview._id)}
-                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
                     >
                       Update
                     </button>
                     <button
                       onClick={() => handleDelete(interview._id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
                       Delete
                     </button>
                   </td>
                 </tr>
+                
               ))}
+             
             </tbody>
           </table>
         ) : (

@@ -26,13 +26,6 @@ const EmployeePage = () => {
                         Browse Interview
                     </a>
 
-                    {/* List of Interview */}
-                    <a
-                        href="/company/add-interview"
-                        className="block bg-purple-500 text-white text-center py-4 rounded-lg shadow-lg hover:bg-purple-600 transition duration-300"
-                    >
-                        Interview Form
-                    </a>
 
                 </div>
             </div>

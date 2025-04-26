@@ -47,6 +47,20 @@ const AppliedInterviews = () => {
     window.open(meetLink, '_blank');
   };
 
+  const codeMeeting = (codeeLink) => {
+    if (!codeeLink) {
+      toast.error("No Code link available for this interview.");
+      return;
+    }
+    
+    // Check if the link already has the http/https protocol
+    if (!codeeLink.startsWith('http://') && !codeeLink.startsWith('https://')) {
+      codeeLink = 'https://' + codeeLink;
+    }
+    
+    window.open(codeeLink, '_blank');
+  };
+
   useEffect(() => {
     fetchAppliedInterviews();
   }, [user]);
@@ -68,7 +82,7 @@ const AppliedInterviews = () => {
               <h3 className="font-bold">{application.interview?.name || 'Untitled Interview'}</h3>
               <p className="text-gray-600">Applied Date: {new Date(application.createdAt).toLocaleDateString()}</p>
               <p className="text-gray-600">Interview Date: {new Date(application.interview?.interviewDate).toLocaleDateString()}</p>
-              {/* <p className="text-gray-600">Status: {application.status || 'Pending'}</p> */}
+              <p className="text-gray-600">Interview Time: {application.interview?.interviewTime}</p>
               
               {application.interview?.meetingLink && (
                 <button 
@@ -76,6 +90,14 @@ const AppliedInterviews = () => {
                   className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-4 rounded"
                 >
                   Join Meeting
+                </button>
+              )}
+              {application.interview?.codeLink && (
+                <button 
+                  onClick={() => codeMeeting(application.interview.codeLink)}
+                  className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-4 rounded"
+                >
+                  code Link
                 </button>
               )}
             </div>

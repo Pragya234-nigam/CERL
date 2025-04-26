@@ -35,6 +35,7 @@ const mySchema = new Schema({
     interviewDate: { type: Date, required: true },
     interviewTime: { type: String, required: true },
     meetingLink: { type: String, required: true },
+    codeLink: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
 

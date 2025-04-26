@@ -114,25 +114,10 @@ const About = () => {
                     HireQuest is a staffing and recruitment company that provides temporary and permanent workforce solutions to businesses across various industries. Specializing in delivering skilled workers for short-term or long-term assignments, HireQuest helps connect employers with qualified candidates, offering flexible staffing services to meet diverse business needs.
                 </p>
             </div>
-<br></br>
+            <br></br>
             <p className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none text-center md:text-left">
                 Choose between Company or Employer
             </p>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-                <Link
-                    href="/company-login"
-                    className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
-                >
-                    Company
-                </Link>
-                <Link
-                    href="/login"
-                    className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:ring-neutral-700"
-                >
-                    Employer
-                </Link>
-            </div>
-            
         </div>
     );
 };

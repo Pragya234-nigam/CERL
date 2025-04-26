@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import Link from 'next/link';
 
 const ListInterview = () => {
   const [companyInterviews, setCompanyInterviews] = useState([]);
@@ -48,6 +49,20 @@ const ListInterview = () => {
     window.open(meetLink, '_blank');
   };
 
+  const codeMeeting = (codeeLink) => {
+    if (!codeeLink) {
+      alert("No Code link available for this interview.");
+      return;
+    }
+    
+    // Check if the link already has the http/https protocol
+    if (!codeeLink.startsWith('http://') && !codeeLink.startsWith('https://')) {
+      codeeLink = 'https://' + codeeLink;
+    }
+    
+    window.open(codeeLink, '_blank');
+  };
+
   useEffect(() => {
     fetchCompanyInterviews();
     fetchPanelInterviews();
@@ -65,19 +80,23 @@ const ListInterview = () => {
             {companyInterviews.map((interview) => (
               <div key={interview._id} className="p-4 border rounded-lg shadow-sm">
                 <h3 className="font-bold">{interview.name || 'Untitled Interview'}</h3>
+                <div className="mb-2">
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    Panel Members: {interview.panel?.length || 0}/5
+                  </span>
+                </div>
                 <p className="text-gray-600">Date: {new Date(interview.createdAt).toLocaleDateString()}</p>
-                 <p className="text-gray-600">Interview Date: {new Date(interview.date).toLocaleDateString()}</p>
-                <p className="text-gray-600">Interview Link: {interview.link}</p>
-
-                <p>Status: {interview.status || 'Not specified'}</p>
-                {interview.meetLink && (
-                  <button 
-                    onClick={() => joinMeeting(interview.meetLink)}
-                    className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-4 rounded"
-                  >
-                    Join Meeting
-                  </button>
-                )}
+                <p className="text-gray-600">Interview Date: {new Date(interview.interviewDate).toLocaleDateString()}</p>
+                <p className="text-gray-600">Interview Time: {interview.interviewTime}</p>
+                
+                <div className="mt-2">
+                  <Link href={interview.meetingLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block">
+                    Meeting Link: {interview.meetingLink}
+                  </Link>
+                  <Link href={interview.codeLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block mt-1">
+                    Code Test Link: {interview.codeLink}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -94,20 +113,25 @@ const ListInterview = () => {
             {panelInterviews.map((interview) => (
               <div key={interview._id} className="p-4 border rounded-lg shadow-sm bg-blue-50">
                 <h3 className="font-bold">{interview.name || 'Untitled Interview'}</h3>
+                <div className="mb-2">
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    Panel Members: {interview.panel?.length || 0}/5
+                  </span>
+                </div>
                 <p className="text-gray-600">Date: {new Date(interview.createdAt).toLocaleDateString()}</p>
-                <p className="text-gray-600">Interview Date: {new Date(interview.date).toLocaleDateString()}</p>
-                <p className="text-gray-600">Interview Link: {interview.link}</p>
-
-                <p>Status: {interview.status || 'Not specified'}</p>
-                <p className="text-sm text-blue-600">You are a panel member</p>
-                {interview.meetLink && (
-                  <button 
-                    onClick={() => joinMeeting(interview.meetLink)}
-                    className="mt-3 bg-green-600 hover:bg-green-700 text-white font-medium py-1 px-4 rounded"
-                  >
-                    Join Meeting
-                  </button>
-                )}
+                <p className="text-gray-600">Interview Date: {new Date(interview.interviewDate).toLocaleDateString()}</p>
+                <p className="text-gray-600">Interview Time: {interview.interviewTime}</p>
+                
+                <div className="mt-2">
+                  <Link href={interview.meetingLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block">
+                    Meeting Link: {interview.meetingLink}
+                  </Link>
+                  <Link href={interview.codeLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block mt-1">
+                    Code Test Link: {interview.codeLink}
+                  </Link>
+                </div>
+                
+                <p className="text-sm text-blue-600 mt-2">You are a panel member</p>
               </div>
             ))}
           </div>
