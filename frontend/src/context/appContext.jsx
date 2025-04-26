@@ -7,20 +7,25 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [company, setCompany] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
-
-    
 
     // Load auth state on mount
     useEffect(() => {
-        const userToken = localStorage.getItem('user');
-        const companyToken = localStorage.getItem('company');
-        
-        if (userToken) {
-            setUser(userToken);
-        }
-        if (companyToken) {
-            setCompany(companyToken);
+        try {
+            const userToken = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+            const companyToken = typeof window !== 'undefined' ? localStorage.getItem('company') : null;
+            
+            if (userToken) {
+                setUser(userToken);
+            }
+            if (companyToken) {
+                setCompany(companyToken);
+            }
+        } catch (error) {
+            console.error('Error loading auth state:', error);
+        } finally {
+            setIsLoading(false);
         }
     }, []);
 
@@ -37,6 +42,10 @@ export const AppProvider = ({ children }) => {
         setUser(null);
         router.push('/about');
     };
+
+    if (isLoading) {
+        return null; // or a loading spinner
+    }
 
     return (
         <AppContext.Provider value={{ 

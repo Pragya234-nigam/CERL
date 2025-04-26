@@ -1,8 +1,8 @@
-const express=require('express');
-const Model=require('../models/applicationModel');
-const router=express.Router();
+const express = require('express');
+const Model = require('../models/applicationModel');
+const router = express.Router();
 require('dotenv').config()
-const jwt=require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const verifyToken = require('../middlewares/verifyToken');
 
 // Check if user has already applied
@@ -48,100 +48,99 @@ router.post('/add', verifyToken, async (req, res) => {
         });
 
         const result = await newApplication.save();
-        res.status(200).json(result);
+        const populatedResult = await Model.findById(result._id)
+            .populate('user', 'name email')
+            .populate({
+                path: 'interview',
+                populate: {
+                    path: 'company',
+                    select: 'name email description'
+                }
+            });
+
+        res.status(200).json(populatedResult);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error submitting application' });
     }
 });
 
-router.get('/getall', verifyToken, (req, res) => {
-    const userId = req.user._id;
-    Model.find({ user: userId })
-        .populate('interview')  // This will populate the interview details
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
-});
-
-router.get('/getbyid/:id',(req,res)=>{
-    Model.findById(req.params.id)
-    .then((result) => {
-         res.status(200).json(result);
-    }).catch((err) => {
-        res.status(500).json(err);
-    });
-});
-
-router.put('/update/:id',(req,res)=>{
-    Model.findByIdAndUpdate(req.params.id,req.body,{new:true})
-    .then((result) => {
-        res.status(200).json(result);
-    }).catch((err) => {
-        res.status(500).json(err);
-    });
-});
-
-router.delete('/delete/:id',(req,res)=>{
-    Model.findByIdAndDelete(req.params.id)
-    .then((result) => {
-        res.status(200).json(result);
-    }).catch((err) => {
-        res.status(500).json(err);
-    });
-});
-
-router.post('/authenticate', (req, res) => {
-    console.log(req.body);
-    Model.findOne(req.body)
-        .then((result) => {
-            if (result) {
-                const { _id, fname, lname, email } = result
-                const payload = { _id, fname, lname, email };
-
-                jwt.sign(
-                    payload,
-                    process.env.JWT_SECRET,
-                    { expiresIn: '2 days' },
-                    (err, token) => {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).json({ message: 'error creating token' })
-                        } else {
-                            res.status(200).json({ token, fname, lname, email })
-                        }
-                    }
-                )
-            }
-            else res.status(401).json({ message: 'Login Failed' })
-        }).catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-});
-
-// Get all applications for company's interviews
-router.get('/company/applications', verifyToken, async (req, res) => {
+// Get all applications for a user
+router.get('/getall', verifyToken, async (req, res) => {
     try {
-        const companyId = req.user._id;
-        
-        const applications = await Model.find()
-            .populate('interview')  // Populate interview details
-            .populate('user', '-password')  // Populate user details except password
-            .exec();
+        const userId = req.user._id;
+        const applications = await Model.find({ user: userId })
+            .populate('user', 'name email')
+            .populate({
+                path: 'interview',
+                populate: {
+                    path: 'company panel',
+                    select: 'name email description'
+                }
+            })
+            .sort({ createdAt: -1 });
 
-        // Filter applications for interviews created by this company
-        const companyApplications = applications.filter(app => 
-            app.interview && app.interview.company.toString() === companyId
-        );
-
-        res.status(200).json(companyApplications);
+        res.status(200).json(applications);
     } catch (err) {
-        console.error('Error fetching company applications:', err);
+        console.error(err);
         res.status(500).json({ message: 'Error fetching applications' });
     }
 });
 
-module.exports=router;
+// Get applications for a specific interview
+router.get('/getbyinterview/:interviewId', verifyToken, async (req, res) => {
+    try {
+        const applications = await Model.find({ interview: req.params.interviewId })
+            .populate('user', 'name email')
+            .populate({
+                path: 'interview',
+                populate: {
+                    path: 'company panel',
+                    select: 'name email description'
+                }
+            })
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(applications);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching applications' });
+    }
+});
+
+// Update application status and add feedback
+router.put('/update/:id', verifyToken, async (req, res) => {
+    try {
+        const { status, feedback, scheduledTime } = req.body;
+        const application = await Model.findById(req.params.id);
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        // Update the application
+        application.status = status || application.status;
+        application.feedback = feedback || application.feedback;
+        application.scheduledTime = scheduledTime || application.scheduledTime;
+        
+        await application.save();
+
+        // Return populated application
+        const updatedApplication = await Model.findById(req.params.id)
+            .populate('user', 'name email')
+            .populate({
+                path: 'interview',
+                populate: {
+                    path: 'company panel',
+                    select: 'name email description'
+                }
+            });
+
+        res.status(200).json(updatedApplication);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error updating application' });
+    }
+});
+
+module.exports = router;

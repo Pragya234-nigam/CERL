@@ -16,6 +16,22 @@ const applicationSchema = new mongoose.Schema({
         enum: ['Pending', 'Accepted', 'Rejected'],
         default: 'Pending'
     },
+    scheduledTime: {
+        type: Date,
+        default: null
+    },
+    feedback: {
+        type: String,
+        default: ''
+    },
+    companyNotes: {
+        type: String,
+        default: ''
+    },
+    notificationSent: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

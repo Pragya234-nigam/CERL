@@ -5,8 +5,6 @@ const router = express.Router();
 
 router.post('/add', verifyToken, (req, res) => {
     req.body.company = req.user._id;
-    console.log(req.body);
-
     new Model(req.body).save()
         .then((result) => {
             res.status(200).json(result);
@@ -16,104 +14,106 @@ router.post('/add', verifyToken, (req, res) => {
         });
 });
 
-router.put('/join/:id', verifyToken, async (req, res) => {
+router.get('/getall', async (req, res) => {
     try {
-        // First check if the company is already in the panel
+        const interviews = await Model.find()
+            .populate('company', 'name email description')
+            .populate('panel', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json(interviews);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching interviews' });
+    }
+});
+
+router.get('/getbyid/:id', async (req, res) => {
+    try {
+        const interview = await Model.findById(req.params.id)
+            .populate('company', 'name email description')
+            .populate('panel', 'name email');
+        if (!interview) {
+            return res.status(404).json({ message: 'Interview not found' });
+        }
+        res.status(200).json(interview);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching interview' });
+    }
+});
+
+router.put('/update/:id', verifyToken, async (req, res) => {
+    try {
         const interview = await Model.findById(req.params.id);
         if (!interview) {
-            return res.status(404).json({ message: "Interview not found" });
+            return res.status(404).json({ message: 'Interview not found' });
+        }
+
+        // Verify ownership
+        if (interview.company.toString() !== req.user._id) {
+            return res.status(403).json({ message: 'Not authorized to update this interview' });
+        }
+
+        const updatedInterview = await Model.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        ).populate('company', 'name email description')
+         .populate('panel', 'name email');
+
+        res.status(200).json(updatedInterview);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error updating interview' });
+    }
+});
+
+router.put('/join/:id', verifyToken, async (req, res) => {
+    try {
+        const interview = await Model.findById(req.params.id);
+        if (!interview) {
+            return res.status(404).json({ message: 'Interview not found' });
         }
 
         // Check if company is already in panel
         if (interview.panel.includes(req.user._id)) {
-            return res.status(400).json({ message: "You are already a member of this panel" });
+            return res.status(400).json({ message: 'Already a panel member' });
         }
 
-        // Add company to the interview panel
-        const result = await Model.findByIdAndUpdate(
-            req.params.id,
-            { $push: { panel: req.user._id } },
-            { new: true, runValidators: true }
-        );
+        // Add company to panel
+        interview.panel.push(req.user._id);
+        await interview.save();
 
-        res.status(200).json({ message: "Successfully joined the panel", panel: result });
+        // Return updated interview with populated fields
+        const updatedInterview = await Model.findById(req.params.id)
+            .populate('company', 'name email description')
+            .populate('panel', 'name email');
+
+        res.status(200).json(updatedInterview);
     } catch (err) {
         console.error(err);
-        // Send the specific validation error message if available
-        const errorMessage = err.errors?.panel?.message || "Error joining the panel";
-        res.status(500).json({ message: errorMessage, error: err });
+        res.status(500).json({ message: 'Error joining panel' });
     }
 });
 
-router.get('/getbyid/:id', (req, res) => {
-    Model.findById(req.params.id)
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
-});
+router.delete('/delete/:id', verifyToken, async (req, res) => {
+    try {
+        const interview = await Model.findById(req.params.id);
+        if (!interview) {
+            return res.status(404).json({ message: 'Interview not found' });
+        }
 
-router.get('/getbycompany', verifyToken, (req, res) => {
-    const companyId = req.user._id;
-    
-    Model.find({ company: companyId })
-        .then((interviews) => {
-            res.status(200).json(interviews);
-        })
-        .catch((err) => {
-            console.error('Error fetching company interviews:', err);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to fetch company interviews',
-                error: err.message
-            });
-        });
-});
+        // Verify ownership
+        if (interview.company.toString() !== req.user._id) {
+            return res.status(403).json({ message: 'Not authorized to delete this interview' });
+        }
 
-router.get('/panel/interviews', verifyToken, (req, res) => {
-    const companyId = req.user._id;
-    console.log(companyId);
-    
-    Model.find({ panel: companyId })
-        .then((interviews) => {
-            res.status(200).json(interviews);
-        })
-        .catch((err) => {
-            console.error('Error fetching panel interviews:', err);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to fetch panel interviews',
-                error: err.message
-            });
-        });
-});
-
-router.get('/getall', (req, res) => {
-    Model.find()
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
-});
-
-router.put('/update/:id', (req, res) => {
-    Model.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
-});
-
-router.delete('/delete/:id', (req, res) => {
-    Model.findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res.status(200).json(result);
-        }).catch((err) => {
-            res.status(500).json(err);
-        });
+        await Model.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Interview deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error deleting interview' });
+    }
 });
 
 module.exports = router;

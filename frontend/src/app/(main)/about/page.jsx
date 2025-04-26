@@ -115,9 +115,6 @@ const About = () => {
                 </p>
             </div>
             <br></br>
-            <p className="max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none text-center md:text-left">
-                Choose between Company or Employer
-            </p>
         </div>
     );
 };

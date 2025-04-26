@@ -1,12 +1,13 @@
 'use client';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAppContext } from '@/context/appContext';
 import Link from 'next/link';
 
 const InterviewDetail = () => {
+    const router = useRouter();
     const [interviewData, setInterviewData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [hasApplied, setHasApplied] = useState(false);
@@ -104,8 +105,8 @@ const InterviewDetail = () => {
             });
 
             toast.success('Application submitted successfully!');
-            console.log('Application Response:', res.data);
             setHasApplied(true); // Update application status
+            router.push('/user/applied-interviews'); // Redirect to applied interviews page
         } catch (error) {
             console.error('Error applying to the interview:', error);
             toast.error(error.response?.data?.error || 'Failed to submit application.');
@@ -117,38 +118,44 @@ const InterviewDetail = () => {
     }
 
     if (!interviewData) {
-        return <div className="text-center mt-12">No Interviewer Found</div>;
+        return <div className="text-center mt-12">Interview not found</div>;
     }
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="max-w-4xl mx-auto px-4 py-8">
             <div className="bg-white rounded-lg shadow-md p-6">
-                <img src={interviewData.image} alt="interview" className="w-16 h-16 rounded-full object-cover mx-auto" />
-                <h2 className="text-xl font-bold text-gray-900 text-center mt-4">{interviewData.name}</h2>
-                <div className="text-center mb-4">
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        Panel Members: {panelCount}/5
-                    </span>
+                <div className="flex items-center space-x-4 mb-6">
+                    <img
+                        src={interviewData.image || '/default-avatar.png'}
+                        alt={interviewData.name}
+                        className="w-20 h-20 rounded-full object-cover"
+                    />
+                    <div>
+                        <h1 className="text-2xl font-bold">{interviewData.name}</h1>
+                        <p className="text-gray-600">{interviewData.jobType}</p>
+                    </div>
                 </div>
-                <p className="text-gray-600 text-center">Email: {interviewData.email}</p>
-                <p className="text-gray-600 text-center">Contact No: {interviewData.contactNo}</p>
-                <p className="text-gray-600">Skills: {interviewData.skills}</p>
-                <p className="text-gray-600">Age: {interviewData.age}</p>
-                <p className="text-gray-600">Experience: {interviewData.experience}</p>
-                <p className="text-gray-600">Education: {interviewData.education}</p>
-                <p className="text-gray-600">Address: {interviewData.address}</p>
-                <p className="text-gray-600">Job Type: {interviewData.jobType}</p>
-                <p className="text-gray-600">interviewDate: {interviewData.interviewDate}</p>
-                <p className='text-gray-600'>InterviewTime: {interviewData.interviewTime}</p>
-                
-                <div className="mt-2">
-                  <Link href={interviewData.meetingLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block">
-                    Meeting Link: {interviewData.meetingLink}
-                  </Link>
-                  <Link href={interviewData.codeLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block mt-1">
-                    Code Test Link: {interviewData.codeLink}
-                  </Link>
+
+                <div className="space-y-4 mb-6">
+                    <p className="text-gray-700"><strong>Description:</strong> {interviewData.description}</p>
+                    <p className="text-gray-700"><strong>Skills Required:</strong> {interviewData.skills}</p>
+                    <p className="text-gray-700"><strong>Experience:</strong> {interviewData.experience}</p>
+                    <p className="text-gray-700"><strong>Education:</strong> {interviewData.education}</p>
+                    <p className="text-gray-700"><strong>Age Category:</strong> {interviewData.age}</p>
+                    <p className="text-gray-700"><strong>Interview Date:</strong> {new Date(interviewData.interviewDate).toLocaleDateString()}</p>
+                    <p className="text-gray-700"><strong>Interview Time:</strong> {interviewData.interviewTime}</p>
+                    <p className="text-gray-700"><strong>Location:</strong> {interviewData.address}</p>
+                    <p className="text-gray-700"><strong>Contact:</strong> {interviewData.contactNo}</p>
+                    <p className="text-gray-700"><strong>Email:</strong> {interviewData.email}</p>
+                    
+                    {(company || hasApplied) && (
+                        <>
+                            <Link href={interviewData.meetingLink} target='_blank' className='text-gray-600'>Meeting Link: {interviewData.meetingLink}</Link><br></br>
+                            <Link href={interviewData.codeLink} target='_blank' className='text-gray-600'>Code Link: {interviewData.codeLink}</Link>
+                        </>
+                    )}
                 </div>
+
                 <div className="mt-6 flex justify-center gap-4">
                     {company ? (
                         isInPanel ? (
