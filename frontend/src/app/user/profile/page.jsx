@@ -117,8 +117,9 @@ const Profile = () => {
     fd.append('cloud_name', 'dcvorslf4');
 
     try {
-      const uploadRes = await axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/upload', fd);
-      const resumeUrl = uploadRes.data.secure_url;
+      const uploadRes = await axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/auto/upload', fd);
+      const resumeUrl = uploadRes.data.url;
+      console.log(uploadRes);
       
       // Update profile with new resume URL
       await axios.put(

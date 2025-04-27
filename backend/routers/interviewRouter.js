@@ -42,6 +42,19 @@ router.get('/getbyid/:id', async (req, res) => {
     }
 });
 
+router.get('/getbycompany', verifyToken, async (req, res) => {
+    try {
+        const interviews = await Model.find({ company: req.user._id })
+            .populate('company', 'name email description')
+            .populate('panel', 'name email')
+            .sort({ createdAt: -1 });
+        res.status(200).json(interviews);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching company interviews' });
+    }
+});
+
 router.put('/update/:id', verifyToken, async (req, res) => {
     try {
         const interview = await Model.findById(req.params.id);

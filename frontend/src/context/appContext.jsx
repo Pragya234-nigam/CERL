@@ -8,6 +8,7 @@ export const AppProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [company, setCompany] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showNavbar, setShowNavbar] = useState(false);
     const router = useRouter();
 
     // Load auth state on mount
@@ -15,6 +16,7 @@ export const AppProvider = ({ children }) => {
         try {
             const userToken = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
             const companyToken = typeof window !== 'undefined' ? localStorage.getItem('company') : null;
+            const navbarState = typeof window !== 'undefined' ? localStorage.getItem('showNavbar') : null;
             
             if (userToken) {
                 setUser(userToken);
@@ -22,12 +24,20 @@ export const AppProvider = ({ children }) => {
             if (companyToken) {
                 setCompany(companyToken);
             }
+            if (navbarState) {
+                setShowNavbar(true);
+            }
         } catch (error) {
             console.error('Error loading auth state:', error);
         } finally {
             setIsLoading(false);
         }
     }, []);
+
+    const handleShowNavbar = () => {
+        setShowNavbar(true);
+        localStorage.setItem('showNavbar', 'true');
+    };
 
     // Logout function for company
     const companyLogout = () => {
@@ -44,7 +54,7 @@ export const AppProvider = ({ children }) => {
     };
 
     if (isLoading) {
-        return null; // or a loading spinner
+        return null;
     }
 
     return (
@@ -54,14 +64,13 @@ export const AppProvider = ({ children }) => {
             company, 
             setCompany, 
             companyLogout, 
-            employeeLogout 
+            employeeLogout,
+            showNavbar,
+            handleShowNavbar
         }}>
             {children}
         </AppContext.Provider>
     );
 };
 
-// Custom hook to use the AppContext
-export const useAppContext = () => {
-    return useContext(AppContext);
-};
+export const useAppContext = () => useContext(AppContext);

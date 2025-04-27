@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -133,33 +134,12 @@ const AppliedInterviews = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-lg font-semibold text-gray-700">Loading your applications...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-screen">
-        <div className="text-red-600 text-center mb-4">
-          <p className="text-lg font-semibold mb-2">Error loading applications</p>
-          <p className="text-sm">{error}</p>
-        </div>
-        <button
-          onClick={handleRefresh}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
-    );
+    return <div className="text-center py-8">Loading applications...</div>;
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Applications</h1>
         <button
           onClick={handleRefresh}
@@ -188,7 +168,6 @@ const AppliedInterviews = () => {
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Status
@@ -199,13 +178,12 @@ const AppliedInterviews = () => {
               onChange={handleFilterChange}
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
-              <option value="">All Statuses</option>
+              <option value="">All</option>
               <option value="Pending">Pending</option>
               <option value="Accepted">Accepted</option>
               <option value="Rejected">Rejected</option>
             </select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Sort By
@@ -304,17 +282,17 @@ const AppliedInterviews = () => {
                 {/* Action Buttons */}
                 {(application.status === 'Accepted' || application.scheduledTime) && (
                   <div className="flex flex-wrap gap-3">
-                    {application.interview?.meetingLink && (
+                    {application.meetingLink && (
                       <button 
-                        onClick={() => openLink(application.interview.meetingLink)}
+                        onClick={() => openLink(application.meetingLink)}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
                       >
                         Join Meeting
                       </button>
                     )}
-                    {application.interview?.codeLink && (
+                    {application.codeLink && (
                       <button 
-                        onClick={() => openLink(application.interview.codeLink)}
+                        onClick={() => openLink(application.codeLink)}
                         className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
                       >
                         Open Code Test

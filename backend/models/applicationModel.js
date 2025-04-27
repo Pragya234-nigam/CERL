@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const applicationSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'user',
         required: true
     },
     interview: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'interviews',
+        ref: 'interview',
         required: true
     },
     status: {
@@ -28,6 +28,14 @@ const applicationSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    meetingLink: {
+        type: String,
+        default: ''
+    },
+    codeLink: {
+        type: String,
+        default: ''
+    },
     notificationSent: {
         type: Boolean,
         default: false
@@ -38,4 +46,4 @@ const applicationSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('applications', applicationSchema);
+module.exports = mongoose.model('application', applicationSchema);

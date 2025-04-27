@@ -126,6 +126,11 @@ const ManageInterview = () => {
                     >
                       Update
                     </button>
+                    <Link href={'/company/applications/'+interview._id}
+                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                    >
+                      View Applications
+                    </Link>
                     <button
                       onClick={() => handleDelete(interview._id)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
