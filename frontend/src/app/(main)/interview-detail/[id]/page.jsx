@@ -62,6 +62,8 @@ const InterviewDetail = () => {
     }, [id, user, company]);
 
     const handleJoinPanel = async () => {
+        console.log(company);
+        
         try {
             if (!company) {
                 toast.error('Please login as a company to join the panel');
@@ -71,7 +73,7 @@ const InterviewDetail = () => {
             const response = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/interview/join/${id}`,
                 {},
-                { headers: { 'x-auth-token': company } }
+                { headers: { 'x-auth-token': company.token } }
             );
 
             toast.success('Successfully joined the panel!');

@@ -4,6 +4,7 @@ const cors = require('cors');
 const CompanyRouter= require('./routers/companyRouter');
 const InterviewRouter=require('./routers/interviewRouter');
 const ApplicationRouter=require('./routers/applicationRouter')
+const path = require('path');
 
 const app = express();
 const port = 5000;
@@ -20,6 +21,8 @@ app.use('/company', CompanyRouter);
 app.use('/interview',InterviewRouter);
 
 app.use('/application',ApplicationRouter);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.listen(port, () => {

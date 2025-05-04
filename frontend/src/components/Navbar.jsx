@@ -32,7 +32,7 @@ const Navbar = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    if (!showNavbar) return null;
+    // if (!showNavbar) return null;
 
     return (
         <div className="top-0 left-0 right-0 z-50">

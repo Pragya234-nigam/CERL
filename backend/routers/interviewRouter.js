@@ -55,6 +55,26 @@ router.get('/getbycompany', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/panel-interviews', verifyToken, async (req, res) => {
+    try {
+        const companyId = req.user._id;
+        
+        // Find interviews where the company is in the panel array but not the creator
+        const interviews = await Model.find({
+            panel: companyId,
+            company: { $ne: companyId } // Exclude interviews created by this company
+        })
+            .populate('company', 'name email description')
+            .populate('panel', 'name email')
+            .sort({ createdAt: -1 });
+        
+        res.status(200).json(interviews);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching panel interviews' });
+    }
+});
+
 router.put('/update/:id', verifyToken, async (req, res) => {
     try {
         const interview = await Model.findById(req.params.id);

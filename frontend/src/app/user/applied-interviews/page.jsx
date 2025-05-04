@@ -16,6 +16,9 @@ const AppliedInterviews = () => {
     search: ''
   });
   const [sortBy, setSortBy] = useState('date-desc');
+  const [selectedInterview, setSelectedInterview] = useState(null);
+  const [applicants, setApplicants] = useState([]);
+  const [showApplicantsModal, setShowApplicantsModal] = useState(false);
 
   const fetchAppliedInterviews = useCallback(async (showRefreshToast = false) => {
     try {
@@ -55,6 +58,32 @@ const AppliedInterviews = () => {
       setRefreshing(false);
     }
   }, []);
+
+  const fetchApplicants = async (interviewId) => {
+    try {
+      const token = localStorage.getItem('user');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      setLoading(true);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/application/getbyinterview/${interviewId}`,
+        {
+          headers: { 'x-auth-token': token }
+        }
+      );
+
+      setApplicants(response.data);
+      setSelectedInterview(interviewId);
+      setShowApplicantsModal(true);
+    } catch (err) {
+      console.error('Error fetching applicants:', err);
+      toast.error('Failed to load applicants');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchAppliedInterviews();
@@ -133,7 +162,7 @@ const AppliedInterviews = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !refreshing) {
     return <div className="text-center py-8">Loading applications...</div>;
   }
 
@@ -243,11 +272,11 @@ const AppliedInterviews = () => {
                   <div>
                     <p className="text-gray-600">
                       <span className="font-medium">Interview Date:</span>{' '}
-                      {new Date(application.interview?.interviewDate).toLocaleDateString()}
+                      {application.interview?.interviewDate ? new Date(application.interview.interviewDate).toLocaleDateString() : 'Not scheduled'}
                     </p>
                     <p className="text-gray-600">
                       <span className="font-medium">Interview Time:</span>{' '}
-                      {application.interview?.interviewTime}
+                      {application.interview?.interviewTime || 'Not specified'}
                     </p>
                     {application.scheduledTime && (
                       <p className="text-blue-600 font-medium">
@@ -258,7 +287,7 @@ const AppliedInterviews = () => {
                   <div>
                     <p className="text-gray-600">
                       <span className="font-medium">Job Type:</span>{' '}
-                      {application.interview?.jobType}
+                      {application.interview?.jobType || 'Not specified'}
                     </p>
                     <p className="text-gray-600">
                       <span className="font-medium">Company:</span>{' '}
@@ -266,7 +295,7 @@ const AppliedInterviews = () => {
                     </p>
                     <p className="text-gray-600">
                       <span className="font-medium">Required Skills:</span>{' '}
-                      {application.interview?.skills}
+                      {application.interview?.skills || 'Not specified'}
                     </p>
                   </div>
                 </div>
@@ -280,26 +309,28 @@ const AppliedInterviews = () => {
                 )}
 
                 {/* Action Buttons */}
-                {(application.status === 'Accepted' || application.scheduledTime) && (
-                  <div className="flex flex-wrap gap-3">
-                    {application.meetingLink && (
-                      <button 
-                        onClick={() => openLink(application.meetingLink)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
-                      >
-                        Join Meeting
-                      </button>
-                    )}
-                    {application.codeLink && (
-                      <button 
-                        onClick={() => openLink(application.codeLink)}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
-                      >
-                        Open Code Test
-                      </button>
-                    )}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-3 justify-end">
+                  {(application.status === 'Accepted' || application.scheduledTime) && (
+                    <>
+                      {application.meetingLink && (
+                        <button 
+                          onClick={() => openLink(application.meetingLink)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors mr-2"
+                        >
+                          Join Meeting
+                        </button>
+                      )}
+                      {application.codeLink && (
+                        <button 
+                          onClick={() => openLink(application.codeLink)}
+                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
+                        >
+                          Open Code Test
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 {/* Status Messages */}
                 {application.status === 'Pending' && (
@@ -310,6 +341,54 @@ const AppliedInterviews = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Applicants Modal */}
+      {showApplicantsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">All Candidates for This Interview</h3>
+              <button 
+                onClick={() => setShowApplicantsModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            
+            {applicants.length === 0 ? (
+              <p className="text-center py-8 text-gray-500">No candidates found for this interview.</p>
+            ) : (
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                {applicants.map(applicant => (
+                  <div key={applicant._id} className="border rounded-lg p-4">
+                    <div className="flex justify-between mb-2">
+                      <h4 className="font-medium">{applicant.user?.name || 'Unknown Applicant'}</h4>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        applicant.status === 'Accepted' ? 'bg-green-100 text-green-800' :
+                        applicant.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {applicant.status}
+                      </span>
+                    </div>
+                    
+                    <div className="text-sm">
+                      <p><span className="font-medium">Applied:</span> {new Date(applicant.createdAt).toLocaleDateString()}</p>
+                      {applicant.feedback && (
+                        <div className="mt-2">
+                          <span className="font-medium">Feedback: </span>
+                          <span className="text-gray-700">{applicant.feedback}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

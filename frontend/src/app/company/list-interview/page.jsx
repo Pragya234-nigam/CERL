@@ -23,7 +23,7 @@ const ListInterview = () => {
 
   const fetchPanelInterviews = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/interview/panel/interviews`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/interview/panel-interviews`, {
         headers: {
           'x-auth-token': `${localStorage.getItem('company')}`
         }

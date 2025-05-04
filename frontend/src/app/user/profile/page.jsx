@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useAppContext } from '@/context/appContext';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import path from 'path';
 
 const Profile = () => {
   const { user } = useAppContext();
@@ -27,6 +28,8 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [resume, setResume] = useState(null);
+  const [resumeUrl, setResumeUrl] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -37,6 +40,9 @@ const Profile = () => {
           headers: { 'x-auth-token': user }
         });
         setProfile(response.data);
+        if (response.data.resume) {
+          setResumeUrl(response.data.resume);
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile');
@@ -93,46 +99,58 @@ const Profile = () => {
     }
   };
 
-  const handleResumeUpload = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Check file type
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF or Word document');
-      return;
-    }
-
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size should be less than 5MB');
-      return;
-    }
-
-    setUploading(true);
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('upload_preset', 'interview');
-    fd.append('cloud_name', 'dcvorslf4');
-
-    try {
-      const uploadRes = await axios.post('https://api.cloudinary.com/v1_1/dcvorslf4/auto/upload', fd);
-      const resumeUrl = uploadRes.data.url;
-      console.log(uploadRes);
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB max
+        toast.error('File size exceeds 5MB limit');
+        return;
+      }
       
-      // Update profile with new resume URL
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/update`,
-        { ...profile, resume: resumeUrl },
-        { headers: { 'x-auth-token': user } }
-      );
+      const allowedTypes = [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword'
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Only PDF and Word documents are allowed');
+        return;
+      }
+      
+      setResume(file);
+    }
+  };
 
-      setProfile(prev => ({ ...prev, resume: resumeUrl }));
+  const handleResumeUpload = async () => {
+    if (!resume) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('resume', resume);
+    
+    try {
+      setUploading(true);
+      const token = localStorage.getItem('user');
+      
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/upload-resume`,
+        formData,
+        {
+          headers: {
+            'x-auth-token': token,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      
+      setResumeUrl(response.data.resumePath);
       toast.success('Resume uploaded successfully');
     } catch (error) {
       console.error('Error uploading resume:', error);
-      toast.error('Failed to upload resume');
+      toast.error(error.response?.data?.message || 'Failed to upload resume');
     } finally {
       setUploading(false);
     }
@@ -299,24 +317,35 @@ const Profile = () => {
                   <div className="mt-1 flex items-center space-x-4">
                     <input
                       type="file"
-                      onChange={handleResumeUpload}
+                      onChange={handleFileChange}
                       accept=".pdf,.doc,.docx"
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    {uploading && <span className="text-sm text-gray-500">Uploading...</span>}
+                    <button
+                      type="button"
+                      onClick={handleResumeUpload}
+                      disabled={!resume || uploading}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {uploading ? 'Uploading...' : 'Upload'}
+                    </button>
                   </div>
-                  {profile.resume && (
+                  {resumeUrl && (
                     <div className="mt-2">
-                      <a 
-                        href={profile.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-700"
-                      >
-                        View Current Resume
-                      </a>
+                      <p className="text-sm text-gray-600">
+                        Current resume: 
+                        <a 
+                          href={`${process.env.NEXT_PUBLIC_API_URL}/${path.basename(resumeUrl)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="ml-2 text-blue-600 hover:underline"
+                        >
+                          View Resume
+                        </a>
+                      </p>
                     </div>
                   )}
+                  <p className="mt-1 text-sm text-gray-500">PDF or Word document up to 5MB</p>
                 </div>
               </div>
 
