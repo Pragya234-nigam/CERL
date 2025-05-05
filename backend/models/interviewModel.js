@@ -20,7 +20,7 @@ const interviewSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        default: ''
+        required: true
     },
     skills: {
         type: String,

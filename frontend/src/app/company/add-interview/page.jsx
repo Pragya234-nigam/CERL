@@ -189,7 +189,19 @@ const Interview = () => {
                                 <p className="text-xs text-red-600 mt-2">{interviewForm.errors.contactNo}</p>
                             )}
                         </div>
-
+                        <div>
+                            <label htmlFor="description" className="font-medium">Description</label>
+                            <textarea
+                                id="description"
+                                onChange={interviewForm.handleChange}
+                                value={interviewForm.values.description}
+                                required
+                                className="w-full mt-2 h-32 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                            />
+                            {interviewForm.errors.description && interviewForm.touched.description && (
+                                <p className="text-xs text-red-600 mt-2">{interviewForm.errors.description}</p>
+                            )}
+                        </div>
                         <div>
                             <label htmlFor="skills" className="font-medium">Skills Required</label>
                             <textarea

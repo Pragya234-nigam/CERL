@@ -73,7 +73,7 @@ const InterviewDetail = () => {
             const response = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/interview/join/${id}`,
                 {},
-                { headers: { 'x-auth-token': company.token } }
+                { headers: { 'x-auth-token': company } }
             );
 
             toast.success('Successfully joined the panel!');
@@ -137,9 +137,8 @@ const InterviewDetail = () => {
                         <p className="text-gray-600">{interviewData.jobType}</p>
                     </div>
                 </div>
-
                 <div className="space-y-4 mb-6">
-                    <p className="text-gray-700"><strong>Description:</strong> {interviewData.description}</p>
+                <p className="text-gray-700"><strong>Description:</strong> {interviewData.description}</p>
                     <p className="text-gray-700"><strong>Skills Required:</strong> {interviewData.skills}</p>
                     <p className="text-gray-700"><strong>Experience:</strong> {interviewData.experience}</p>
                     <p className="text-gray-700"><strong>Education:</strong> {interviewData.education}</p>
@@ -149,13 +148,6 @@ const InterviewDetail = () => {
                     <p className="text-gray-700"><strong>Location:</strong> {interviewData.address}</p>
                     <p className="text-gray-700"><strong>Contact:</strong> {interviewData.contactNo}</p>
                     <p className="text-gray-700"><strong>Email:</strong> {interviewData.email}</p>
-                    
-                    {(company || hasApplied) && (
-                        <>
-                            <Link href={interviewData.meetingLink} target='_blank' className='text-gray-600'>Meeting Link: {interviewData.meetingLink}</Link><br></br>
-                            <Link href={interviewData.codeLink} target='_blank' className='text-gray-600'>Code Link: {interviewData.codeLink}</Link>
-                        </>
-                    )}
                 </div>
 
                 <div className="mt-6 flex justify-center gap-4">

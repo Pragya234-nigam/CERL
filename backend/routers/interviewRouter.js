@@ -102,6 +102,8 @@ router.put('/update/:id', verifyToken, async (req, res) => {
 });
 
 router.put('/join/:id', verifyToken, async (req, res) => {
+    console.log(req.user);
+    
     try {
         const interview = await Model.findById(req.params.id);
         if (!interview) {

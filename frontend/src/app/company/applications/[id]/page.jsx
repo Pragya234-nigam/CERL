@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 const Applications = () => {
   const { id } = useParams();
@@ -12,6 +13,8 @@ const Applications = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [savingFeedback, setSavingFeedback] = useState({});
+  const [feedbackDraft, setFeedbackDraft] = useState({});
   const [filters, setFilters] = useState({
     status: '',
     search: '',
@@ -214,12 +217,22 @@ const Applications = () => {
     }
   };
 
-  const handleFeedback = async (applicationId, feedback) => {
+  const handleFeedbackChange = (applicationId, feedback) => {
+    setFeedbackDraft(prev => ({
+      ...prev,
+      [applicationId]: feedback
+    }));
+  };
+
+  const handleFeedbackSave = async (applicationId) => {
     try {
       const token = localStorage.getItem('company');
       if (!token) {
         throw new Error('Authentication token not found');
       }
+
+      setSavingFeedback(prev => ({ ...prev, [applicationId]: true }));
+      const feedback = feedbackDraft[applicationId];
 
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/application/update/${applicationId}`,
@@ -235,10 +248,19 @@ const Applications = () => {
         )
       );
 
-      toast.success('Feedback added successfully');
+      // Clear draft after successful save
+      setFeedbackDraft(prev => {
+        const newDraft = { ...prev };
+        delete newDraft[applicationId];
+        return newDraft;
+      });
+
+      toast.success('Feedback saved successfully');
     } catch (err) {
-      console.error('Error adding feedback:', err);
-      toast.error(err.response?.data?.message || 'Failed to add feedback');
+      console.error('Error saving feedback:', err);
+      toast.error(err.response?.data?.message || 'Failed to save feedback');
+    } finally {
+      setSavingFeedback(prev => ({ ...prev, [applicationId]: false }));
     }
   };
 
@@ -344,14 +366,18 @@ const Applications = () => {
         {interview ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-gray-700"><span className="font-medium">Title:</span> {interview.title || 'N/A'}</p>
-              <p className="text-gray-700"><span className="font-medium">Description:</span> {interview.description || 'N/A'}</p>
-              <p className="text-gray-700"><span className="font-medium">Date:</span> {interview.date ? new Date(interview.date).toLocaleDateString() : 'N/A'}</p>
+              <p className="text-gray-700"><span className="font-medium">Title:</span> {interview.name || 'N/A'}</p>
+              <p className="text-gray-700"><span className="font-medium">Date:</span> {interview.interviewDate ? new Date(interview.interviewDate).toLocaleDateString() : 'N/A'}</p>
+              <p className="text-gray-700"><span className="font-medium">Time:</span> {interview.interviewTime || 'N/A'}</p>
               <p className="text-gray-700"><span className="font-medium">Status:</span> {interview.status || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-gray-700"><span className="font-medium">Location:</span> {interview.location || 'N/A'}</p>
-              <p className="text-gray-700"><span className="font-medium">Meeting Link:</span> {interview.meetLink || 'N/A'}</p>
+            <Link href={interview.meetingLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block">
+                    Meeting Link: {interview.meetingLink}
+                  </Link>
+                  <Link href={interview.codeLink} target="_blank" className="text-blue-600 hover:text-blue-800 underline block mt-1">
+                    Code Test Link: {interview.codeLink}
+                  </Link>
               <p className="text-gray-700"><span className="font-medium">Panel Size:</span> {interview.panel?.length || 0} members</p>
               <p className="text-gray-700"><span className="font-medium">Created:</span> {interview.createdAt ? new Date(interview.createdAt).toLocaleDateString() : 'N/A'}</p>
             </div>
@@ -432,26 +458,30 @@ const Applications = () => {
                 onChange={handleFilterChange}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
-                <option value="">All Education Levels</option>
-                <option value="Bachelor">Bachelor's</option>
-                <option value="Master">Master's</option>
+                <option value="">Select Education</option>
+                <option value="10th">10th</option>
+                <option value="12th">12th</option>
+                <option value="Graduate">Graduate</option>
+                <option value="Post Graduate">Post Graduate</option>
                 <option value="PhD">PhD</option>
-                <option value="High School">High School</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Minimum Experience (Years)
               </label>
-              <input
-                type="number"
+              <select
                 name="experienceYears"
                 value={filters.experienceYears}
                 onChange={handleFilterChange}
-                min="0"
-                placeholder="Min. years..."
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
+              >
+                <option value="">Select Experience</option>
+                <option value="fresher">Fresher</option>
+                <option value="0-2 years">0-2 years</option>
+                <option value="3-5 years">3-5 years</option>
+                <option value="6+ years">6+ years</option>
+              </select>
             </div>
             <div className="flex items-end">
               <div className="flex items-center">
@@ -588,14 +618,43 @@ const Applications = () => {
                   </div>
 
                   {/* Feedback Section */}
-                  <div>
-                    <h4 className="font-medium mb-2">Feedback</h4>
-                    <textarea
-                      value={application.feedback || ''}
-                      onChange={(e) => handleFeedback(application._id, e.target.value)}
-                      placeholder="Add feedback for the applicant..."
-                      className="w-full h-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    />
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Feedback</h4>
+                    <div className="relative">
+                      <textarea
+                        value={feedbackDraft[application._id] ?? application.feedback ?? ''}
+                        onChange={(e) => handleFeedbackChange(application._id, e.target.value)}
+                        placeholder="Add feedback for the applicant..."
+                        className="w-full h-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      />
+                      <div className="flex justify-end mt-2">
+                        {feedbackDraft[application._id] !== undefined && 
+                         feedbackDraft[application._id] !== application.feedback && (
+                            <button
+                                onClick={() => handleFeedbackSave(application._id)}
+                                disabled={savingFeedback[application._id]}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            >
+                                {savingFeedback[application._id] ? (
+                                    <>
+                                        <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Saving...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>Save Feedback</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Links Section */}
